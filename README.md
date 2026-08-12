@@ -1,22 +1,65 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# LinguaVerse
 
-# Run and deploy your AI Studio app
+تطبيق أندرويد لتعلّم اللغات: دروس تفاعلية، مفردات، قواعد، بطاقات، ومعلّم ذكي مبني على Gemini.
 
-This contains everything you need to run your app locally.
+مبني بـ Kotlin و Jetpack Compose و Room.
 
-View your app in AI Studio: https://ai.studio/apps/40d3ffc4-8748-49f9-9a8a-ae896b6a928c
+---
 
-## Run Locally
+## التشغيل محليًا
 
-**Prerequisites:**  [Android Studio](https://developer.android.com/studio)
+**المتطلبات:** [Android Studio](https://developer.android.com/studio) و JDK 17+.
 
+```bash
+git clone https://github.com/MOT1209/Englisch-app.git
+cd Englisch-app
+./gradlew assembleDebug
+```
 
-1. Open Android Studio
-2. Select **Open** and choose the directory containing this project
-3. Allow Android Studio to fix any incompatibilities as it imports the project.
-4. Create a file named `.env` in the project directory and set `GEMINI_API_KEY` in that file to your Gemini API key (see `.env.example` for an example)
-5. Remove this line from the app's `build.gradle.kts` file: `signingConfig = signingConfigs.getByName("debugConfig")`
-6. Run the app on an emulator or physical device
-7. If you have already published your app in AI Studio, please [request upload key reset](https://support.google.com/googleplay/android-developer/answer/9842756#zippy=%2Crequest-an-upload-key-reset) in Google Play Console.
+لتفعيل المعلّم الذكي: أنشئ ملف `.env` في جذر المشروع وضع فيه مفتاح Gemini الخاص بك:
+
+```
+GEMINI_API_KEY=your_key_here
+```
+
+بدون المفتاح يعمل التطبيق كاملًا عدا ميزات الذكاء الاصطناعي، وتظهر رسالة صريحة توضّح أنها غير مهيّأة.
+
+## البناء والاختبار
+
+```bash
+./gradlew assembleDebug        # بناء APK للتطوير
+./gradlew testDebugUnitTest    # اختبارات الوحدة
+```
+
+> **ملاحظة على أجهزة بلغة غير إنجليزية:** يثبّت `gradle.properties` لغة الـJVM على `en-US`، بما في ذلك فئة `format`. هذا ضروري: مولّد Room يستعمل `String.format` التي تقرأ فئة `FORMAT` من إعداد التنسيق الإقليمي للنظام، فيكتب على جهاز عربي أرقامًا هندية عربية داخل شيفرة Kotlin المولّدة (`RoomOpenDelegate(١, ...)`) ويفشل التصريف. لا تحذف هذه الإعدادات.
+
+## البنية
+
+```
+app/src/main/java/com/example/
+├── ai/          خدمة Gemini ونتائجها الصريحة (AiOutcome)
+├── audio/       نطق النصوص (TTS)
+├── data/
+│   ├── db/      Room: قاعدة البيانات والهجرات و DAO
+│   ├── model/   الكيانات والمحوّلات
+│   ├── prefs/   تفضيلات المستخدم (DataStore)
+│   └── repository/
+├── domain/      منطق نقي قابل للاختبار (تصحيح الإجابات)
+└── ui/          Compose: التنقّل والشاشات والمكوّنات والثيم
+```
+
+قاعدة البيانات تُصدّر مخطّطها إلى `app/schemas/`. أي تعديل على المخطّط يجب أن يرافقه `Migration` في `AppDatabase.kt` — لا يوجد `fallbackToDestructiveMigration`، لأنها كانت تمحو بيانات المستخدمين.
+
+## حالة المشروع
+
+هذا المشروع خضع لتدقيق شامل موثّق في **[`docs/AUDIT.md`](docs/AUDIT.md)**، يتضمّن المشاكل مرتّبة بأربعة مستويات أولوية وخارطة تنفيذ من تسع مراحل.
+
+نُفِّذت المراحل 0–5. المتبقّي:
+
+- **المرحلة 6** — حقن الاعتماديات وواجهات للمستودع وخدمة الذكاء، وتفكيك الـViewModel الكبير.
+- **المرحلة 7** — نقل الألوان المثبّتة إلى الثيم (الوضع الداكن غير مقروء حاليًا في عدة شاشات)، والتدويل ودعم RTL، وحماية لوحة الإدارة.
+- **المرحلة 8** — إزالة الاعتماديات غير المستخدمة، وضبط Moshi و ProGuard، وتفعيل التصغير، والمفاتيح الأجنبية.
+
+### قيد معروف
+
+مفتاح Gemini يُحزَم داخل الـAPK ويُرسل كمعامل في الرابط، أي أنه قابل للاستخراج. الحل يتطلّب خادمًا وسيطًا أو Firebase AI Logic مع App Check. لا تستعمل في هذا التطبيق مفتاحًا غير مقيّد أو مرتبطًا بحساب فوترة مفتوح.
