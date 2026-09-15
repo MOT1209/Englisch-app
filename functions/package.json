@@ -1,0 +1,12 @@
+{
+  "name": "linguaverse-functions",
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-functions": "^4.6.0",
+    "firebase-admin": "^11.10.0",
+    "@google/generativeai": "^0.24.0"
+  }
+}

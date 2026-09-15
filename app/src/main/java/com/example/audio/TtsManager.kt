@@ -22,6 +22,17 @@ class TtsManager(context: Context) : TextToSpeech.OnInitListener {
         if (!isInitialized || tts == null) return
 
         val locale = getLocaleForLanguageCode(languageCode)
+
+        // Check locale availability before setting — avoids silent wrong-language speech
+        val result = tts?.isLanguageAvailable(locale) ?: TextToSpeech.LANG_NOT_SUPPORTED
+        if (result == TextToSpeech.LANG_NOT_SUPPORTED) {
+            Log.w(
+                "TtsManager",
+                "TTS does not support locale: $locale — skipping speech for: $text"
+            )
+            return
+        }
+
         tts?.language = locale
         tts?.setSpeechRate(speedRate)
         tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "linguaverse_tts_id")

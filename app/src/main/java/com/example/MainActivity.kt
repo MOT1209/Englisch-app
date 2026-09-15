@@ -14,15 +14,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.ui.LinguaVerseApp
 import com.example.ui.theme.LinguaVerseTheme
 import com.example.ui.viewmodel.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    // Shared ViewModel — injected via Hilt
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         setContent {
             val isDarkTheme by viewModel.isDarkTheme.collectAsStateWithLifecycle()
 
@@ -31,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LinguaVerseApp(viewModel = viewModel)
+                    LinguaVerseApp(mainViewModel = viewModel)
                 }
             }
         }

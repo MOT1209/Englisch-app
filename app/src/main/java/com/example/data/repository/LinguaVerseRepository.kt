@@ -5,33 +5,38 @@ import com.example.data.db.LinguaVerseDao
 import com.example.data.model.*
 import kotlinx.coroutines.flow.Flow
 
-class LinguaVerseRepository(private val dao: LinguaVerseDao) {
+/**
+ * Repository implementation that uses Room DAO for data access.
+ * Implements [LinguaVerseRepositoryInterface] for testability.
+ */
+class LinguaVerseRepository(
+    private val dao: LinguaVerseDao
+) : LinguaVerseRepositoryInterface {
 
     private companion object {
         const val SEED_LANGUAGE_CODE = "es"
     }
 
-    val allLanguages: Flow<List<Language>> = dao.getAllLanguages()
-    val userProfile: Flow<UserProfile?> = dao.getUserProfile()
-    val achievements: Flow<List<Achievement>> = dao.getAllAchievements()
-    val chatMessages: Flow<List<ChatMessage>> = dao.getChatMessages()
+    override val allLanguages: Flow<List<Language>> = dao.getAllLanguages()
+    override val userProfile: Flow<UserProfile?> = dao.getUserProfile()
+    override val achievements: Flow<List<Achievement>> = dao.getAllAchievements()
+    override val chatMessages: Flow<List<ChatMessage>> = dao.getChatMessages()
 
-    fun getLessonsByLanguage(langCode: String): Flow<List<Lesson>> = dao.getLessonsByLanguage(langCode)
-    fun getVocabularies(langCode: String): Flow<List<Vocabulary>> = dao.getVocabularies(langCode)
-    fun getFavoriteVocabularies(langCode: String): Flow<List<Vocabulary>> = dao.getFavoriteVocabularies(langCode)
-    fun getGrammarRules(langCode: String): Flow<List<GrammarRule>> = dao.getGrammarRules(langCode)
-    fun getFlashcards(langCode: String): Flow<List<Flashcard>> = dao.getFlashcards(langCode)
+    override fun getLessonsByLanguage(langCode: String): Flow<List<Lesson>> = dao.getLessonsByLanguage(langCode)
+    override fun getVocabularies(langCode: String): Flow<List<Vocabulary>> = dao.getVocabularies(langCode)
+    override fun getFavoriteVocabularies(langCode: String): Flow<List<Vocabulary>> = dao.getFavoriteVocabularies(langCode)
+    override fun getGrammarRules(langCode: String): Flow<List<GrammarRule>> = dao.getGrammarRules(langCode)
+    override fun getFlashcards(langCode: String): Flow<List<Flashcard>> = dao.getFlashcards(langCode)
 
-    suspend fun getExercisesForLesson(lessonId: String): List<Exercise> = dao.getExercisesForLesson(lessonId)
-
-    suspend fun getLessonById(lessonId: String): Lesson? = dao.getLessonById(lessonId)
+    override suspend fun getExercisesForLesson(lessonId: String): List<Exercise> = dao.getExercisesForLesson(lessonId)
+    override suspend fun getLessonById(lessonId: String): Lesson? = dao.getLessonById(lessonId)
 
     /**
      * Populates first-run content. Every block here is guarded by an emptiness
      * check: re-seeding on an existing database would overwrite rows via
      * OnConflictStrategy.REPLACE and reset the user's progress.
      */
-    suspend fun initializeSeedData() {
+    override suspend fun initializeSeedData() {
         // Seed languages if empty
         if (dao.countLanguages() == 0) {
             val defaultLanguages = listOf(
@@ -46,7 +51,7 @@ class LinguaVerseRepository(private val dao: LinguaVerseDao) {
                 Language("ru", "Russian", "Русский", "🇷🇺", true, 24, "Cyrillic alphabet & grammar cases"),
                 Language("ja", "Japanese", "日本語", "🇯🇵", true, 30, "Hiragana, Katakana, Kanji & conversation"),
                 Language("ko", "Korean", "한국어", "🇰🇷", true, 28, "Hangul script & daily dialogue"),
-                Language("zh", "Chinese", "中文", "🇨🇳", true, 30, "Mandarin Pinyin, Tones & Characters")
+                Language("zh", "Chinese", "中文", "🇨🇳", true, 30, "Mandarin Pinyin, Tones & characters")
             )
             dao.insertLanguages(defaultLanguages)
         }
@@ -99,7 +104,6 @@ class LinguaVerseRepository(private val dao: LinguaVerseDao) {
         )
         dao.insertLessons(lessons)
 
-        // Exercises for Lesson 3
         val exercisesLesson3 = listOf(
             Exercise(
                 id = "ex_es_3_1",
@@ -158,7 +162,6 @@ class LinguaVerseRepository(private val dao: LinguaVerseDao) {
         )
         dao.insertExercises(exercisesLesson3)
 
-        // Seed Vocabulary
         val vocabs = listOf(
             Vocabulary("v_1", "es", "Hola", "Hello", "Hola, ¿cómo estás?", "Hello, how are you?", "oh-lah", "Greetings", true),
             Vocabulary("v_2", "es", "Gracias", "Thank you", "Muchas gracias por tu ayuda.", "Thank you very much for your help.", "grah-syahs", "Common", true),
@@ -169,7 +172,6 @@ class LinguaVerseRepository(private val dao: LinguaVerseDao) {
         )
         dao.insertVocabularies(vocabs)
 
-        // Seed Grammar Rules
         val grammar = listOf(
             GrammarRule("g_1", "es", CefrLevel.A1, "Nouns & Gender", "Nouns in Spanish are masculine or feminine.", "Nouns ending in -o are typically masculine (el libro), while those ending in -a are feminine (la mesa).", "El libro es grande.", "The book is big."),
             GrammarRule("g_2", "es", CefrLevel.A1, "Present Tense Regular Verbs", "Conjugate -ar, -er, -ir verbs in present tense.", "For -ar verbs like hablar: yo hablo, tú hablas, él habla, nosotros hablamos, ellos hablan.", "Yo hablo español.", "I speak Spanish."),
@@ -177,7 +179,6 @@ class LinguaVerseRepository(private val dao: LinguaVerseDao) {
         )
         dao.insertGrammarRules(grammar)
 
-        // Seed Flashcards
         val flashcards = listOf(
             Flashcard("fc_1", "es", "El mercado", "The market", "Voy al mercado por la mañana.", "el mair-kah-doh"),
             Flashcard("fc_2", "es", "La biblioteca", "The library", "Estudio en la biblioteca.", "lah bee-blee-oh-teh-kah"),
@@ -187,7 +188,7 @@ class LinguaVerseRepository(private val dao: LinguaVerseDao) {
         dao.insertFlashcards(flashcards)
     }
 
-    suspend fun completeLesson(lessonId: String, xpEarned: Int) {
+    override suspend fun completeLesson(lessonId: String, xpEarned: Int) {
         val lesson = dao.getLessonById(lessonId) ?: return
 
         // Replaying a finished lesson is allowed, but it must not farm XP, coins
@@ -212,33 +213,33 @@ class LinguaVerseRepository(private val dao: LinguaVerseDao) {
         )
     }
 
-    suspend fun updateTargetLanguage(langCode: String) {
+    override suspend fun updateTargetLanguage(langCode: String) {
         val profile = dao.getUserProfileOnce() ?: return
         dao.updateProfile(profile.copy(targetLanguageCode = langCode))
     }
 
-    suspend fun toggleFavoriteVocab(vocabulary: Vocabulary) {
+    override suspend fun toggleFavoriteVocab(vocabulary: Vocabulary) {
         dao.updateVocabulary(vocabulary.copy(isFavorite = !vocabulary.isFavorite))
     }
 
-    suspend fun addCustomLanguage(language: Language) {
+    override suspend fun addCustomLanguage(language: Language) {
         dao.insertLanguage(language)
     }
 
-    suspend fun addCustomLesson(lesson: Lesson, exercises: List<Exercise>) {
+    override suspend fun addCustomLesson(lesson: Lesson, exercises: List<Exercise>) {
         dao.insertLesson(lesson)
         dao.insertExercises(exercises)
     }
 
-    suspend fun addCustomVocabulary(vocabulary: Vocabulary) {
+    override suspend fun addCustomVocabulary(vocabulary: Vocabulary) {
         dao.insertVocabulary(vocabulary)
     }
 
-    suspend fun addCustomGrammarRule(rule: GrammarRule) {
+    override suspend fun addCustomGrammarRule(rule: GrammarRule) {
         dao.insertGrammarRule(rule)
     }
 
-    suspend fun sendChatMessage(userText: String, aiReply: AiTeacherReply) {
+    override suspend fun sendChatMessage(userText: String, aiReply: AiTeacherReply) {
         dao.insertChatMessage(
             ChatMessage(sender = "user", text = userText)
         )
@@ -251,5 +252,9 @@ class LinguaVerseRepository(private val dao: LinguaVerseDao) {
                 grammarExplanation = aiReply.grammarExplanation
             )
         )
+    }
+
+    override suspend fun clearChatHistory() {
+        dao.clearChatMessages()
     }
 }

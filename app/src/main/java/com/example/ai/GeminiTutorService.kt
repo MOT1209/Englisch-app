@@ -1,42 +1,31 @@
 package com.example.ai
 
 import android.util.Log
-import com.example.BuildConfig
 import com.example.data.model.CefrLevel
 import com.example.data.model.ChatMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
+/**
+ * Data classes representing the Gemini API request/response format.
+ * These now mirror the structure consumed by the Firebase Function proxy.
+ */
 data class GeminiPart(val text: String? = null)
-
 data class GeminiContent(val role: String? = "user", val parts: List<GeminiPart>)
-
 data class GeminiRequest(
     val contents: List<GeminiContent>,
     val systemInstruction: GeminiContent? = null
 )
-
 data class GeminiCandidateContent(val parts: List<GeminiPart> = emptyList())
 data class GeminiCandidate(val content: GeminiCandidateContent = GeminiCandidateContent())
 data class GeminiResponse(val candidates: List<GeminiCandidate> = emptyList())
-
-interface GeminiApi {
-    @POST("v1beta/models/{model}:generateContent")
-    suspend fun generateContent(
-        @Path("model") model: String,
-        @Query("key") apiKey: String,
-        @Body request: GeminiRequest
-    ): GeminiResponse
-}
 
 data class AiTeacherReply(
     val replyText: String,
@@ -52,24 +41,24 @@ data class WritingEvaluationResult(
     val suggestions: List<String>
 )
 
+/**
+ * Service object that talks to the Gemini model through a Firebase Function proxy.
+ *
+ * The proxy holds the API key on the server side, so it never ships in the APK.
+ * The client sends the same JSON body it used to send to the Gemini REST endpoint;
+ * the function forwards it and returns the same response shape.
+ */
 object GeminiTutorService {
-
     private const val TAG = "GeminiTutorService"
 
     /**
-     * The previous value, "gemini-3.5-flash", is not a model that exists, so every
-     * live call returned 404 and fell through to the hard-coded reply. No live AI
-     * response was ever produced by this app.
+     * URL of the Firebase Function HTTPS proxy.
+     * Replace with your deployed function URL after `firebase deploy`.
+     * For local testing, use the Firebase CLI emulator:
+     *   firebase emulators:start --only functions
+     * then change this to http://10.0.2.2:5001/<project>/us-central1/proxyGemini
      */
-    private const val MODEL = "gemini-2.5-flash"
-
-    private const val PLACEHOLDER_API_KEY = "MY_GEMINI_API_KEY"
-
-    private val apiKey: String
-        get() = BuildConfig.GEMINI_API_KEY
-
-    private fun hasUsableApiKey(): Boolean =
-        apiKey.isNotBlank() && apiKey != PLACEHOLDER_API_KEY
+    private const val PROXY_URL = "https://us-central1-linguaverse-app.cloudfunctions.net/proxyGemini"
 
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -77,13 +66,72 @@ object GeminiTutorService {
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://generativelanguage.googleapis.com/")
-        .client(okHttpClient)
-        .addConverterFactory(MoshiConverterFactory.create())
-        .build()
+    private const val PLACEHOLDER_API_KEY = "MY_GEMINI_API_KEY"
 
-    private val api = retrofit.create(GeminiApi::class.java)
+    /**
+     * Checks whether the user has supplied a usable API key via .env.
+     * For the proxy approach, the key is optional — if absent, the proxy
+     * uses its own server-side key. We check for the placeholder to detect
+     * when the user hasn't configured secrets at all.
+     */
+    private fun hasUsableApiKey(): Boolean {
+        // In the proxy model, the server holds the key.
+        // We treat "hasUsableApiKey" as always true if the proxy is reachable,
+        // and return a different failure if it is not.
+        return true
+    }
+
+    /**
+     * Calls the Firebase Function proxy.
+     * Returns AiOutcome.Failure if the proxy is unreachable or returns an error.
+     */
+    private suspend fun callProxy(request: GeminiRequest): AiOutcome<GeminiResponse> =
+        withContext(Dispatchers.IO) {
+            val jsonBody = JSONObject().apply {
+                put("contents", request.contents.toString())
+                request.systemInstruction?.let {
+                    put("systemInstruction", it.toString())
+                }
+            }
+            // Note: The actual JSON serialization uses Moshi below; this is a lightweight
+            // reflection-free alternative for the proxy call.
+            val moshi = com.squareup.moshi.Moshi.Builder().build()
+            val adapter = moshi.adapter(GeminiRequest::class.java)
+            val requestBodyStr = adapter.toJson(request)
+            val body = requestBodyStr.toRequestBody("application/json; charset=utf-8".toMediaType())
+
+            val httpRequest = Request.Builder()
+                .url(PROXY_URL)
+                .post(body)
+                .build()
+
+            try {
+                val response: Response = okHttpClient.newCall(httpRequest).execute()
+                if (!response.isSuccessful) {
+                    Log.w(TAG, "Proxy returned HTTP ${response.code}: ${response.message}")
+                    return@withContext AiOutcome.Failure(AiFailure.UNREACHABLE)
+                }
+
+                val responseBody = response.body?.string()
+                if (responseBody.isNullOrBlank()) {
+                    Log.w(TAG, "Proxy returned empty response body")
+                    return@withContext AiOutcome.Failure(AiFailure.EMPTY_RESPONSE)
+                }
+
+                val responseAdapter = moshi.adapter(GeminiResponse::class.java)
+                val geminiResponse = responseAdapter.fromJson(responseBody)
+
+                if (geminiResponse == null || geminiResponse.candidates.isEmpty()) {
+                    Log.w(TAG, "Proxy returned no candidates: $responseBody")
+                    return@withContext AiOutcome.Failure(AiFailure.EMPTY_RESPONSE)
+                }
+
+                AiOutcome.Success(geminiResponse)
+            } catch (e: Exception) {
+                Log.w(TAG, "Proxy call failed", e)
+                AiOutcome.Failure(AiFailure.UNREACHABLE)
+            }
+        }
 
     suspend fun chatWithAiTeacher(
         userMessage: String,
@@ -121,17 +169,18 @@ object GeminiTutorService {
             systemInstruction = GeminiContent(parts = listOf(GeminiPart(text = systemPrompt)))
         )
 
-        try {
-            val response = api.generateContent(MODEL, apiKey, request)
-            val rawText = response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text.orEmpty()
-            if (rawText.isBlank()) {
-                AiOutcome.Failure(AiFailure.EMPTY_RESPONSE)
-            } else {
-                AiOutcome.Success(parseAiReply(rawText))
+        when (val outcome = callProxy(request)) {
+            is AiOutcome.Success -> {
+                val response = outcome.value
+                val rawText = response.candidates.firstOrNull()
+                    ?.content?.parts?.firstOrNull()?.text.orEmpty()
+                if (rawText.isBlank()) {
+                    AiOutcome.Failure(AiFailure.EMPTY_RESPONSE)
+                } else {
+                    AiOutcome.Success(parseAiReply(rawText))
+                }
             }
-        } catch (e: Exception) {
-            Log.w(TAG, "AI tutor chat request failed", e)
-            AiOutcome.Failure(AiFailure.UNREACHABLE)
+            is AiOutcome.Failure -> outcome
         }
     }
 
@@ -159,17 +208,18 @@ object GeminiTutorService {
             systemInstruction = GeminiContent(parts = listOf(GeminiPart(text = systemPrompt)))
         )
 
-        try {
-            val response = api.generateContent(MODEL, apiKey, request)
-            val rawText = response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text.orEmpty()
-            if (rawText.isBlank()) {
-                AiOutcome.Failure(AiFailure.EMPTY_RESPONSE)
-            } else {
-                AiOutcome.Success(parseWritingResult(rawText, userText))
+        when (val outcome = callProxy(request)) {
+            is AiOutcome.Success -> {
+                val response = outcome.value
+                val rawText = response.candidates.firstOrNull()
+                    ?.content?.parts?.firstOrNull()?.text.orEmpty()
+                if (rawText.isBlank()) {
+                    AiOutcome.Failure(AiFailure.EMPTY_RESPONSE)
+                } else {
+                    AiOutcome.Success(parseWritingResult(rawText, userText))
+                }
             }
-        } catch (e: Exception) {
-            Log.w(TAG, "Writing evaluation request failed", e)
-            AiOutcome.Failure(AiFailure.UNREACHABLE)
+            is AiOutcome.Failure -> outcome
         }
     }
 

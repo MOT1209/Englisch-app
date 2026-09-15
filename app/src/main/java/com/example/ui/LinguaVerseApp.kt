@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -19,9 +19,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.get
 import com.example.data.model.SkillType
+import com.example.data.model.UserProfile
 import com.example.ui.screens.*
+import com.example.ui.viewmodel.AiChatViewModel
+import com.example.ui.viewmodel.AdminViewModel
+import com.example.ui.viewmodel.HomeViewModel
+import com.example.ui.viewmodel.LessonViewModel
 import com.example.ui.viewmodel.MainViewModel
+import com.example.ui.viewmodel.ProfileViewModel
+import com.example.ui.viewmodel.SkillsViewModel
 
 /** Destinations shown in the bottom navigation bar. */
 enum class MainDestination(
@@ -50,25 +58,13 @@ private object Routes {
 
 @Composable
 fun LinguaVerseApp(
-    viewModel: MainViewModel,
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
-    val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
-    val languages by viewModel.languages.collectAsStateWithLifecycle()
-    val currentLessons by viewModel.currentLessons.collectAsStateWithLifecycle()
-    val vocabularies by viewModel.vocabularies.collectAsStateWithLifecycle()
-    val grammarRules by viewModel.grammarRules.collectAsStateWithLifecycle()
-    val flashcards by viewModel.flashcards.collectAsStateWithLifecycle()
-    val achievements by viewModel.achievements.collectAsStateWithLifecycle()
-    val chatMessages by viewModel.chatMessages.collectAsStateWithLifecycle()
-
-    val isAiChatLoading by viewModel.isAiChatLoading.collectAsStateWithLifecycle()
-    val aiChatError by viewModel.aiChatError.collectAsStateWithLifecycle()
-    val writingEvaluation by viewModel.writingEvaluation.collectAsStateWithLifecycle()
-    val writingEvaluationError by viewModel.writingEvaluationError.collectAsStateWithLifecycle()
-    val isEvaluatingWriting by viewModel.isEvaluatingWriting.collectAsStateWithLifecycle()
-    val audioSpeed by viewModel.audioSpeed.collectAsStateWithLifecycle()
+    val userProfile by mainViewModel.userProfile.collectAsStateWithLifecycle()
+    val languages by mainViewModel.languages.collectAsStateWithLifecycle()
+    val audioSpeed by mainViewModel.audioSpeed.collectAsStateWithLifecycle()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination
@@ -119,20 +115,26 @@ fun LinguaVerseApp(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            composable(MainDestination.HOME.route) {
+            composable(MainDestination.HOME.route) { backStackEntry ->
+                val homeViewModel: HomeViewModel = hiltViewModel(backStackEntry)
+                val homeProfile by homeViewModel.userProfile.collectAsStateWithLifecycle()
+                val homeLanguages by homeViewModel.languages.collectAsStateWithLifecycle()
+                val homeLessons by homeViewModel.currentLessons.collectAsStateWithLifecycle()
+                val homeAchievements by homeViewModel.achievements.collectAsStateWithLifecycle()
+
                 HomeScreen(
-                    userProfile = userProfile,
-                    languages = languages,
-                    lessons = currentLessons,
-                    achievements = achievements,
-                    onSelectLanguage = { viewModel.setTargetLanguage(it) },
-                    onStartLesson = { navController.navigate(Routes.lesson(it.id)) },
+                    userProfile = homeProfile,
+                    languages = homeLanguages,
+                    lessons = homeLessons,
+                    achievements = homeAchievements,
+                    onSelectLanguage = { homeViewModel.setTargetLanguage(it) },
+                    onStartLesson = { lesson -> navController.navigate(Routes.lesson(lesson.id)) },
                     onNavigateToSkills = { navController.navigateToTab(MainDestination.SKILLS) },
                     onNavigateToAiChat = { navController.navigateToTab(MainDestination.AI_CHAT) }
                 )
             }
 
-            composable(MainDestination.SKILLS.route) {
+            composable(MainDestination.SKILLS.route) { backStackEntry ->
                 SkillsHubScreen(
                     onSelectSkill = { skill ->
                         if (skill == SkillType.AI_CHAT) {
@@ -144,14 +146,20 @@ fun LinguaVerseApp(
                 )
             }
 
-            composable(MainDestination.AI_CHAT.route) {
+            composable(MainDestination.AI_CHAT.route) { backStackEntry ->
+                val aiChatViewModel: AiChatViewModel = hiltViewModel(backStackEntry)
+                val chatMessages by aiChatViewModel.chatMessages.collectAsStateWithLifecycle()
+                val isAiChatLoading by aiChatViewModel.isAiChatLoading.collectAsStateWithLifecycle()
+                val aiChatError by aiChatViewModel.aiChatError.collectAsStateWithLifecycle()
+                val chatLevel by aiChatViewModel.currentLevel.collectAsStateWithLifecycle()
+
                 AiChatScreen(
                     messages = chatMessages,
                     isLoading = isAiChatLoading,
                     error = aiChatError,
-                    currentLevel = userProfile.currentLevel,
-                    onSendMessage = { viewModel.sendAiChatMessage(it) },
-                    onSpeakText = { viewModel.speakText(it) },
+                    currentLevel = chatLevel,
+                    onSendMessage = { aiChatViewModel.sendAiChatMessage(it) },
+                    onSpeakText = { mainViewModel.speakText(it) },
                     onBack = { navController.navigateToTab(MainDestination.HOME) }
                 )
             }
@@ -163,22 +171,26 @@ fun LinguaVerseApp(
                 )
             }
 
-            composable(MainDestination.PROFILE.route) {
+            composable(MainDestination.PROFILE.route) { backStackEntry ->
+                val profileViewModel: ProfileViewModel = hiltViewModel(backStackEntry)
+                val profileUser by profileViewModel.userProfile.collectAsStateWithLifecycle()
+                val profileAchievements by profileViewModel.achievements.collectAsStateWithLifecycle()
+
                 ProfileScreen(
-                    userProfile = userProfile,
-                    achievements = achievements
+                    userProfile = profileUser ?: UserProfile(),
+                    achievements = profileAchievements
                 )
             }
 
             composable(MainDestination.SETTINGS.route) {
                 SettingsScreen(
-                    isDarkTheme = viewModel.isDarkTheme.collectAsStateWithLifecycle().value,
+                    isDarkTheme = mainViewModel.isDarkTheme.collectAsStateWithLifecycle().value,
                     audioSpeed = audioSpeed,
                     languages = languages,
                     targetLanguageCode = userProfile.targetLanguageCode,
-                    onToggleDarkTheme = { viewModel.toggleDarkTheme() },
-                    onSetAudioSpeed = { viewModel.setAudioSpeed(it) },
-                    onSelectLanguage = { viewModel.setTargetLanguage(it) },
+                    onToggleDarkTheme = { mainViewModel.toggleDarkTheme() },
+                    onSetAudioSpeed = { mainViewModel.setAudioSpeed(it) },
+                    onSelectLanguage = { mainViewModel.setTargetLanguage(it) },
                     onOpenAdminPanel = { navController.navigate(Routes.ADMIN) }
                 )
             }
@@ -189,25 +201,34 @@ fun LinguaVerseApp(
                     ?.let { name -> SkillType.entries.firstOrNull { it.name == name } }
 
                 if (skillType == null) {
-                    // Unknown skill in the route: go back rather than crash.
                     LaunchedEffect(Unit) { navController.popBackStack() }
                 } else {
+                    val skillsViewModel: SkillsViewModel = hiltViewModel(entry)
+                    val aiChatViewModel: AiChatViewModel = hiltViewModel(entry)
+                    val skillVocabularies by skillsViewModel.vocabularies.collectAsStateWithLifecycle()
+                    val skillGrammarRules by skillsViewModel.grammarRules.collectAsStateWithLifecycle()
+                    val skillFlashcards by skillsViewModel.flashcards.collectAsStateWithLifecycle()
+                    val skillTargetLang by skillsViewModel.targetLanguageCode.collectAsStateWithLifecycle()
+                    val writingEvaluation by aiChatViewModel.writingEvaluation.collectAsStateWithLifecycle()
+                    val writingEvaluationError by aiChatViewModel.writingEvaluationError.collectAsStateWithLifecycle()
+                    val isEvaluatingWriting by aiChatViewModel.isEvaluatingWriting.collectAsStateWithLifecycle()
+
                     SkillDetailScreen(
                         skillType = skillType,
-                        targetLanguageCode = userProfile.targetLanguageCode,
-                        vocabularies = vocabularies,
-                        grammarRules = grammarRules,
-                        flashcards = flashcards,
-                        audioSpeed = audioSpeed,
+                        targetLanguageCode = skillTargetLang,
+                        vocabularies = skillVocabularies,
+                        grammarRules = skillGrammarRules,
+                        flashcards = skillFlashcards,
                         writingEvaluation = writingEvaluation,
                         writingEvaluationError = writingEvaluationError,
                         isEvaluatingWriting = isEvaluatingWriting,
-                        onSpeakText = { viewModel.speakText(it) },
-                        onSetAudioSpeed = { viewModel.setAudioSpeed(it) },
+                        audioSpeed = audioSpeed,
+                        onSpeakText = { mainViewModel.speakText(it) },
+                        onSetAudioSpeed = { mainViewModel.setAudioSpeed(it) },
                         onEvaluateWriting = { text, prompt ->
-                            viewModel.evaluateWritingSubmission(text, prompt)
+                            aiChatViewModel.evaluateWritingSubmission(text, prompt)
                         },
-                        onToggleFavoriteVocab = { viewModel.toggleFavoriteVocabulary(it) },
+                        onToggleFavoriteVocab = { vocab -> skillsViewModel.toggleFavoriteVocab(vocab) },
                         onBack = { navController.popBackStack() }
                     )
                 }
@@ -215,12 +236,12 @@ fun LinguaVerseApp(
 
             composable(Routes.LESSON) { entry ->
                 val lessonId = entry.arguments?.getString("lessonId").orEmpty()
-                LaunchedEffect(lessonId) { viewModel.startLessonById(lessonId) }
 
-                val activeLesson by viewModel.activeLesson.collectAsStateWithLifecycle()
-                val activeExercises by viewModel.activeExercises.collectAsStateWithLifecycle()
-                val currentExerciseIndex by viewModel.currentExerciseIndex.collectAsStateWithLifecycle()
-                val lessonCompleted by viewModel.lessonCompleted.collectAsStateWithLifecycle()
+                val lessonViewModel: LessonViewModel = hiltViewModel(entry)
+                val activeLesson by lessonViewModel.activeLesson.collectAsStateWithLifecycle()
+                val activeExercises by lessonViewModel.activeExercises.collectAsStateWithLifecycle()
+                val currentExerciseIndex by lessonViewModel.currentExerciseIndex.collectAsStateWithLifecycle()
+                val lessonCompleted by lessonViewModel.lessonCompleted.collectAsStateWithLifecycle()
 
                 val lesson = activeLesson
                 if (lesson == null) {
@@ -229,7 +250,7 @@ fun LinguaVerseApp(
                     }
                 } else {
                     val exitLesson = {
-                        viewModel.closeLesson()
+                        lessonViewModel.closeLesson()
                         navController.popBackStack()
                         Unit
                     }
@@ -239,25 +260,29 @@ fun LinguaVerseApp(
                         currentIndex = currentExerciseIndex,
                         isCompleted = lessonCompleted,
                         audioSpeed = audioSpeed,
-                        onSpeakText = { viewModel.speakText(it) },
-                        onSetAudioSpeed = { viewModel.setAudioSpeed(it) },
-                        onSubmitAnswer = { viewModel.submitExerciseAnswer(it) },
-                        onNextExercise = { viewModel.nextExercise() },
+                        onSpeakText = { mainViewModel.speakText(it) },
+                        onSetAudioSpeed = { mainViewModel.setAudioSpeed(it) },
+                        onSubmitAnswer = { lessonViewModel.submitExerciseAnswer(it) },
+                        onNextExercise = { lessonViewModel.nextExercise() },
                         onCloseLesson = exitLesson
                     )
                 }
             }
 
-            composable(Routes.ADMIN) {
+            composable(Routes.ADMIN) { backStackEntry ->
+                val adminViewModel: AdminViewModel = hiltViewModel(backStackEntry)
+                val adminTargetLang by adminViewModel.targetLanguageCode.collectAsStateWithLifecycle()
+
                 AdminPanelScreen(
+                    targetLanguageCode = adminTargetLang,
                     onAddLanguage = { code, name, nativeName, flag, desc ->
-                        viewModel.addNewLanguage(code, name, nativeName, flag, desc)
+                        adminViewModel.addNewLanguage(code, name, nativeName, flag, desc)
                     },
                     onAddLesson = { title, cat, level, xp, prompt, ans ->
-                        viewModel.addNewLesson(title, cat, level, xp, prompt, ans)
+                        adminViewModel.addNewLesson(title, cat, level, xp, prompt, ans, adminTargetLang)
                     },
                     onAddVocabulary = { word, trans, ex, cat ->
-                        viewModel.addNewVocabulary(word, trans, ex, cat)
+                        adminViewModel.addNewVocabulary(word, trans, ex, cat, adminTargetLang)
                     },
                     onBack = { navController.popBackStack() }
                 )
@@ -277,3 +302,4 @@ private fun NavHostController.navigateToTab(destination: MainDestination) {
         restoreState = true
     }
 }
+

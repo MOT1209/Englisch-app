@@ -24,9 +24,10 @@ import com.example.ui.theme.extendedColors
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminPanelScreen(
+    targetLanguageCode: String,
     onAddLanguage: (String, String, String, String, String) -> Unit,
-    onAddLesson: (String, String, CefrLevel, Int, String, String) -> Unit,
-    onAddVocabulary: (String, String, String, String) -> Unit,
+    onAddLesson: (String, String, CefrLevel, Int, String, String, String) -> Unit,
+    onAddVocabulary: (String, String, String, String, String) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -63,8 +64,8 @@ fun AdminPanelScreen(
             when (activeTab) {
                 0 -> AdminAnalyticsTab()
                 1 -> AdminAddLanguageTab(onAddLanguage)
-                2 -> AdminAddLessonTab(onAddLesson)
-                3 -> AdminAddVocabTab(onAddVocabulary)
+                2 -> AdminAddLessonTab(targetLanguageCode, onAddLesson)
+                3 -> AdminAddVocabTab(targetLanguageCode, onAddVocabulary)
             }
         }
     }
@@ -171,7 +172,7 @@ fun AdminAddLanguageTab(onAddLanguage: (String, String, String, String, String) 
 }
 
 @Composable
-fun AdminAddLessonTab(onAddLesson: (String, String, CefrLevel, Int, String, String) -> Unit) {
+fun AdminAddLessonTab(targetLanguageCode: String, onAddLesson: (String, String, CefrLevel, Int, String, String, String) -> Unit) {
     var title by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
     var prompt by remember { mutableStateOf("") }
@@ -221,7 +222,7 @@ fun AdminAddLessonTab(onAddLesson: (String, String, CefrLevel, Int, String, Stri
             Button(
                 onClick = {
                     if (title.isNotBlank()) {
-                        onAddLesson(title, category.ifEmpty { "General" }, CefrLevel.A1, 20, prompt, answer)
+                        onAddLesson(title, category.ifEmpty { "General" }, CefrLevel.A1, 20, prompt, answer, targetLanguageCode)
                         showSuccess = true
                         title = ""; category = ""; prompt = ""; answer = ""
                     }
@@ -241,7 +242,7 @@ fun AdminAddLessonTab(onAddLesson: (String, String, CefrLevel, Int, String, Stri
 }
 
 @Composable
-fun AdminAddVocabTab(onAddVocabulary: (String, String, String, String) -> Unit) {
+fun AdminAddVocabTab(targetLanguageCode: String, onAddVocabulary: (String, String, String, String, String) -> Unit) {
     var word by remember { mutableStateOf("") }
     var translation by remember { mutableStateOf("") }
     var example by remember { mutableStateOf("") }
@@ -282,7 +283,7 @@ fun AdminAddVocabTab(onAddVocabulary: (String, String, String, String) -> Unit) 
             Button(
                 onClick = {
                     if (word.isNotBlank() && translation.isNotBlank()) {
-                        onAddVocabulary(word, translation, example, category.ifEmpty { "General" })
+                        onAddVocabulary(word, translation, example, category.ifEmpty { "General" }, targetLanguageCode)
                         showSuccess = true
                         word = ""; translation = ""; example = ""; category = ""
                     }
