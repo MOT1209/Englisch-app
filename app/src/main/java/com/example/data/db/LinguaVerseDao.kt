@@ -1,0 +1,157 @@
+package com.example.data.db
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
+import com.example.data.model.*
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface LinguaVerseDao {
+
+    // Languages
+    @Query("SELECT * FROM languages")
+    fun getAllLanguages(): Flow<List<Language>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertLanguages(languages: List<Language>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertLanguage(language: Language)
+
+    @Query("SELECT COUNT(*) FROM languages")
+    suspend fun countLanguages(): Int
+
+    // User Profile
+    @Query("SELECT * FROM user_profile WHERE id = 'user_default'")
+    fun getUserProfile(): Flow<UserProfile?>
+
+    /** Single read, for callers that need the current profile rather than a stream. */
+    @Query("SELECT * FROM user_profile WHERE id = 'user_default'")
+    suspend fun getUserProfileOnce(): UserProfile?
+
+    @Insert(onConflict = OnConflictStrategy.UPDATE)
+    suspend fun insertOrUpdateProfile(profile: UserProfile)
+
+    @Update
+    suspend fun updateProfile(profile: UserProfile)
+
+    // Lessons
+    @Query("SELECT * FROM lessons WHERE languageCode = :langCode ORDER BY orderIndex ASC")
+    fun getLessonsByLanguage(langCode: String): Flow<List<Lesson>>
+
+    @Query("SELECT * FROM lessons WHERE id = :lessonId")
+    suspend fun getLessonById(lessonId: String): Lesson?
+
+    @Query("SELECT COUNT(*) FROM lessons WHERE languageCode = :langCode")
+    suspend fun countLessons(langCode: String): Int
+
+    @Query("SELECT * FROM lessons")
+    suspend fun getAllLessonsOnce(): List<Lesson>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertLessons(lessons: List<Lesson>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertLesson(lesson: Lesson)
+
+    @Update
+    suspend fun updateLesson(lesson: Lesson)
+
+    // Exercises
+    @Query("SELECT * FROM exercises WHERE lessonId = :lessonId")
+    suspend fun getExercisesForLesson(lessonId: String): List<Exercise>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertExercises(exercises: List<Exercise>)
+
+    // Vocabulary
+    @Query("SELECT * FROM vocabularies WHERE languageCode = :langCode")
+    fun getVocabularies(langCode: String): Flow<List<Vocabulary>>
+
+    @Query("SELECT * FROM vocabularies WHERE languageCode = :langCode AND isFavorite = 1")
+    fun getFavoriteVocabularies(langCode: String): Flow<List<Vocabulary>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertVocabularies(vocabularies: List<Vocabulary>)
+
+    @Query("SELECT * FROM vocabularies")
+    suspend fun getAllVocabulariesOnce(): List<Vocabulary>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertVocabulary(vocabulary: Vocabulary)
+
+    @Update
+    suspend fun updateVocabulary(vocabulary: Vocabulary)
+
+    // Grammar
+    @Query("SELECT * FROM grammar_rules WHERE languageCode = :langCode")
+    fun getGrammarRules(langCode: String): Flow<List<GrammarRule>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertGrammarRules(rules: List<GrammarRule>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertGrammarRule(rule: GrammarRule)
+
+    // Flashcards
+    @Query("SELECT * FROM flashcards WHERE languageCode = :langCode")
+    fun getFlashcards(langCode: String): Flow<List<Flashcard>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertFlashcards(flashcards: List<Flashcard>)
+
+    @Query("SELECT * FROM flashcards")
+    suspend fun getAllFlashcardsOnce(): List<Flashcard>
+
+    @Update
+    suspend fun updateFlashcard(flashcard: Flashcard)
+
+    // Achievements
+    @Query("SELECT * FROM achievements")
+    fun getAllAchievements(): Flow<List<Achievement>>
+
+    @Query("SELECT COUNT(*) FROM achievements")
+    suspend fun countAchievements(): Int
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAchievements(achievements: List<Achievement>)
+
+    @Query("SELECT * FROM achievements")
+    suspend fun getAllAchievementsOnce(): List<Achievement>
+
+    @Transaction
+    suspend fun mergePublicContent(
+        languages: List<Language>,
+        lessons: List<Lesson>,
+        exercises: List<Exercise>,
+        vocabularies: List<Vocabulary>,
+        grammarRules: List<GrammarRule>,
+        flashcards: List<Flashcard>,
+        achievements: List<Achievement>
+    ) {
+        insertLanguages(languages)
+        insertLessons(lessons)
+        insertExercises(exercises)
+        insertVocabularies(vocabularies)
+        insertGrammarRules(grammarRules)
+        insertFlashcards(flashcards)
+        insertAchievements(achievements)
+    }
+
+    @Update
+    suspend fun updateAchievement(achievement: Achievement)
+
+    // Chat
+    @Query("SELECT * FROM chat_messages ORDER BY timestamp ASC")
+    fun getChatMessages(): Flow<List<ChatMessage>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertChatMessage(message: ChatMessage)
+
+    @Query("DELETE FROM chat_messages")
+    suspend fun clearChatMessages()
+}

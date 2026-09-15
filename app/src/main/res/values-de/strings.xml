@@ -1,0 +1,161 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">LinguaVerse</string>
+
+    <!-- Home Screen -->
+    <string name="continue_learning">WEITER LERNEN</string>
+    <string name="skill_practice_15_modules">Kompetenz-Training (15 Module)</string>
+    <string name="view_all">Alle anzeigen</string>
+    <string name="course_curriculum">Kurslehrplan</string>
+    <string name="ai_tutor">KI-Tutor</string>
+    <string name="ai_teacher">KI-Lehrer</string>
+    <string name="ai_teacher_tutor">KI-Lehrer und Tutor</string>
+    <string name="ai_chat_feedback">Konversation mit KI-Feedback üben</string>
+    <string name="start_lesson_xp">Lektion starten (+%1$d XP)</string>
+    <string name="xp_reward">+%1$d XP</string>
+    <string name="daily_goal">Tagesziel</string>
+    <string name="s_3_days_left">Noch 3 Tage</string>
+
+    <!-- Lesson Screen -->
+    <string name="close">Schließen</string>
+    <string name="question_of_exercises">Frage %1$d von %2$d</string>
+    <string name="check_answer">Antwort prüfen</string>
+    <string name="continue_action">Weiter</string>
+    <string name="practiced_this">Das habe ich geübt</string>
+    <string name="excellent">Ausgezeichnet!</string>
+    <string name="not_quite_right">Nicht ganz richtig</string>
+    <string name="correct_answer">Richtige Antwort!</string>
+    <string name="nice_practice">Toll geübt!</string>
+    <string name="keep_going">Weiter so.</string>
+    <string name="correct_answer_feedback">Richtig: %1$s</string>
+    <string name="practice_out_loud">Laut üben</string>
+    <string name="speak_text">Text vorlesen</string>
+    <string name="type_answer_in_language">Antworte auf %1$s</string>
+
+    <!-- Lesson Completion -->
+    <string name="lesson_completed">Lektion abgeschlossen!</string>
+    <string name="you_completed_title">Du hast “%1$s” abgeschlossen</string>
+    <string name="coins_reward">+%1$d Münzen</string>
+    <string name="return_to_dashboard">Zurück zum Dashboard</string>
+
+    <!-- AI Chat Screen -->
+    <string name="ai_chat_input_placeholder">Frag oder antworte in der Zielsprache...</string>
+    <string name="start_conversation">Gespräch mit dem KI-Tutor starten</string>
+    <string name="ai_chat_desc">Stell Fragen, übe Dialoge oder hol dir in Echtzeit Grammatik-Feedback!</string>
+    <string name="ai_correction">💡 Korrektur: %1$s</string>
+    <string name="ai_suggestion">✨ Bessere Formulierung: %1$s</string>
+    <string name="send_message">Senden</string>
+
+    <!-- Writing Evaluation -->
+    <string name="ai_writing_lab">KI-Schreiblabor</string>
+    <string name="corrected_version">Korrigierte Version:</string>
+    <string name="ai_feedback">KI-Feedback:</string>
+    <string name="analyze_writing_with_ai">Schreiben mit KI analysieren</string>
+    <string name="writing_score_format">Punktzahl: %1$d/100</string>
+    <string name="prompt">Aufgabenstellung</string>
+    <string name="escribe_aqu_tu_respuesta">Schreibe deine Antwort hier...</string>
+
+    <!-- Speaking Practice -->
+    <string name="speaking_practice">Sprechübung</string>
+    <string name="play_again">Erneut abspielen</string>
+    <string name="speaking_instruction">Hör zu und wiederhole den Satz laut in deinem eigenen Tempo.</string>
+
+    <!-- Reading Story -->
+    <string name="listen_full_story">Ganze Geschichte anhören</string>
+    <string name="tap_to_translate">Tippe auf ein Wort, um es zu übersetzen:</string>
+    <string name="meaning_in_context">Bedeutung im Kontext</string>
+    <string name="word_translation">“%1$s” → Übersetzung: %2$s</string>
+
+    <!-- Flashcards -->
+    <string name="no_flashcards_available_yet">Noch keine Karteikarten verfügbar.</string>
+    <string name="card_of_total">Karte %1$d von %2$d</string>
+    <string name="next_card">Nächste Karte</string>
+    <string name="search_vocabulary">Vokabeln suchen...</string>
+
+    <!-- Generic Skill View -->
+    <string name="generic_skill_practice">%1$s üben</string>
+    <string name="interactive_modules_ready">Interaktive Module zum Üben bereit.</string>
+
+    <!-- Skills Hub -->
+    <string name="skill_hub_title">Sprachkompetenz-Hub</string>
+    <string name="skill_hub_subtitle">Meistere alle 15 Kernkompetenzen mit KI-Unterstützung</string>
+
+    <!-- Profile Screen -->
+    <string name="learning_profile">Dein Lernprofil</string>
+    <string name="current_level">Aktuelles Niveau: </string>
+    <string name="total_xp">Gesamt-XP</string>
+    <string name="streak_days_format">%1$d Tage</string>
+    <string name="profile_lessons">Lektionen</string>
+    <string name="xp_earned_format">+%1$d XP</string>
+    <string name="achievements_title">Erfolge</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="appearance">Darstellung</string>
+    <string name="dark_mode">Dunkelmodus</string>
+    <string name="audio_pronunciation">Audio und Aussprache</string>
+    <string name="default_audio_speed">Standard-Audiogeschwindigkeit</string>
+    <string name="admin_panel">Admin-Content-Studio</string>
+    <string name="admin_description">Sprachen, Lektionen, Vokabeln und Analysen verwalten</string>
+
+    <!-- Leaderboard -->
+    <string name="weekly_league">Wöchentliche Liga</string>
+    <string name="league_promote_text">Gold-Liga • Top 3 steigen in die Diamond-Liga auf</string>
+    <string name="league_simulated_note">Demo-Rangliste — die anderen Lernenden sind simuliert und keine echten Konten</string>
+    <string name="badge_league">%1$s-Liga</string>
+    <string name="leaderboard_you_label">%1$s (Du)</string>
+    <string name="leaderboard_simulated_label">Simuliert</string>
+    <string name="xp_value_format">%1$d XP</string>
+
+    <!-- Admin Panel -->
+    <string name="admin_panel_title">Admin-Panel und Content-Studio</string>
+    <string name="tab_analytics">Analysen</string>
+    <string name="tab_languages">Sprachen</string>
+    <string name="tab_lessons">Lektionen</string>
+    <string name="tab_vocabulary">Vokabeln</string>
+    <string name="add_new_language">Neue Sprache hinzufügen</string>
+    <string name="lang_code_hint">Sprachcode (z. B. “nl”, “hi”, “sv”)</string>
+    <string name="lang_name_hint">Sprachname (z. B. “Dutch”)</string>
+    <string name="native_name_hint">Muttersprachlicher Name (z. B. “Nederlands”)</string>
+    <string name="description_hint">Beschreibung</string>
+    <string name="add_language_btn">Sprache zum Katalog hinzufügen</string>
+    <string name="language_added">Sprache erfolgreich hinzugefügt!</string>
+    <string name="create_lesson">Eigene Lektion erstellen</string>
+    <string name="lesson_title_hint">Lektionstitel</string>
+    <string name="exercise_question_hint">Beispielfrage</string>
+    <string name="correct_answer_hint">Richtige Antwort</string>
+    <string name="save_lesson_btn">Eigene Lektion speichern</string>
+    <string name="lesson_published">Lektion erfolgreich veröffentlicht!</string>
+    <string name="target_word_hint">Wort der Zielsprache</string>
+    <string name="translation_hint">Übersetzung</string>
+    <string name="example_sentence_hint">Beispielsatz</string>
+    <string name="add_vocabulary_word">Vokabel hinzufügen</string>
+    <string name="vocabulary_word_added">Vokabel hinzugefügt!</string>
+    <string name="category_e_g_travel_food">Kategorie (z. B. Reisen, Essen)</string>
+    <string name="flag_emoji_e_g">Flaggen-Emoji (z. B. 🇳🇱)</string>
+    <string name="system_overview">Systemübersicht</string>
+    <string name="active_learners_count">Aktive Lernende: 12.450</string>
+    <string name="supported_languages_text">Unterstützte Sprachen: Unbegrenzt (12 Standard aktiviert)</string>
+    <string name="total_exercises_completed_148_920">Abgeschlossene Übungen gesamt: 148.920</string>
+    <string name="ai_server_uptime_99_98">KI-Server-Verfügbarkeit: 99,98 %</string>
+
+    <!-- Misc existing -->
+    <string name="add_word_to_vocabulary">Wort zu Vokabeln hinzufügen</string>
+    <string name="favorite">Favorit</string>
+    <string name="play">Abspielen</string>
+    <string name="listen">Anhören</string>
+    <string name="speak">Sprechen</string>
+    <string name="streak">Serie</string>
+    <string name="success">Erfolg</string>
+    <string name="xp_points">XP-Punkte</string>
+    <string name="avatar">Avatar</string>
+    <string name="back">Zurück</string>
+    <string name="level">Niveau: </string>
+    <string name="select_language">Sprache auswählen</string>
+    <string name="hero_banner_desc">Hero-Banner</string>
+    <string name="open_settings">Einstellungen öffnen</string>
+    <string name="admin">Admin</string>
+    <string name="vocabulary">Vokabeln</string>
+    <string name="no_items_yet">Noch keine Einträge</string>
+    <string name="no_data_available">Keine Daten verfügbar</string>
+</resources>

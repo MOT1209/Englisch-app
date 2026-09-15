@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LinguaVerse — خطة التطوير والإصلاح الشاملة</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#151c30; --panel-2:#1b2439; --border:#2b3756;
+    --txt:#e6e9f5; --muted:#9aa3bd; --accent:#818cf8; --accent-2:#34d399;
+    --p0:#ef4444; --p0-bg:rgba(239,68,68,.12);
+    --p1:#f59e0b; --p1-bg:rgba(245,158,11,.12);
+    --p2:#38bdf8; --p2-bg:rgba(56,189,248,.12);
+    --p3:#94a3b8; --p3-bg:rgba(148,163,184,.12);
+    --ok:#22c55e; --ok-bg:rgba(34,197,94,.12);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(1200px 600px at 100% -10%,#1e2a4a 0%,var(--bg) 55%) no-repeat, var(--bg);
+    color:var(--txt);
+    font-family:"Segoe UI","Tahoma",system-ui,-apple-system,sans-serif;
+    line-height:1.85; font-size:16px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 22px 90px}
+  header.hero{
+    background:linear-gradient(135deg,#312e81 0%,#1e293b 60%,#0f172a 100%);
+    border:1px solid var(--border); border-radius:20px; padding:38px 34px; margin-bottom:34px;
+    box-shadow:0 24px 60px -30px rgba(0,0,0,.9);
+  }
+  header.hero .kicker{
+    display:inline-block; font-size:13px; letter-spacing:.5px; color:#c7d2fe;
+    background:rgba(129,140,248,.18); border:1px solid rgba(129,140,248,.35);
+    padding:4px 12px; border-radius:999px; margin-bottom:14px;
+  }
+  header.hero h1{margin:0 0 10px; font-size:34px; line-height:1.35}
+  header.hero p{margin:0; color:#cbd5e1; max-width:800px}
+  .meta-line{margin-top:18px; display:flex; flex-wrap:wrap; gap:10px; font-size:13px; color:var(--muted)}
+  .meta-line span{background:rgba(255,255,255,.05); border:1px solid var(--border); padding:4px 10px; border-radius:8px}
+  h2{
+    font-size:24px; margin:52px 0 18px; padding-inline-start:14px;
+    border-inline-start:5px solid var(--accent); line-height:1.4;
+  }
+  h3{font-size:19px; margin:32px 0 12px; color:#dbe3ff}
+  h4{font-size:16px; margin:22px 0 8px; color:#c7d2fe}
+  p{margin:10px 0}
+  .muted{color:var(--muted)}
+  a{color:var(--accent)}
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin:22px 0}
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px 16px;
+  }
+  .card .num{font-size:30px; font-weight:700; line-height:1.2}
+  .card .lbl{font-size:13px; color:var(--muted)}
+  .card.p0 .num{color:var(--p0)} .card.p1 .num{color:var(--p1)}
+  .card.ok .num{color:var(--ok)} .card.acc .num{color:var(--accent)}
+  .verdict{
+    background:var(--panel); border:1px solid var(--border); border-inline-start:5px solid var(--p1);
+    border-radius:var(--radius); padding:20px 22px; margin:20px 0;
+  }
+  .issue{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px 20px; margin:14px 0;
+  }
+  .issue-head{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:8px}
+  .issue-head .id{
+    font-family:ui-monospace,Consolas,monospace; font-size:13px; font-weight:700;
+    color:#0b1020; background:var(--accent); padding:2px 9px; border-radius:6px;
+  }
+  .issue-head .title{font-weight:700; font-size:17px}
+  .badge{
+    font-size:12px; font-weight:700; padding:2px 10px; border-radius:999px;
+    border:1px solid transparent;
+  }
+  .badge.p0{color:var(--p0); background:var(--p0-bg); border-color:rgba(239,68,68,.35)}
+  .badge.p1{color:var(--p1); background:var(--p1-bg); border-color:rgba(245,158,11,.35)}
+  .badge.p2{color:var(--p2); background:var(--p2-bg); border-color:rgba(56,189,248,.35)}
+  .badge.p3{color:var(--p3); background:var(--p3-bg); border-color:rgba(148,163,184,.35)}
+  .badge.ok{color:var(--ok); background:var(--ok-bg); border-color:rgba(34,197,94,.35)}
+  .where{
+    font-family:ui-monospace,Consolas,monospace; font-size:12.5px; color:#a5b4fc;
+    background:rgba(255,255,255,.04); border:1px solid var(--border);
+    border-radius:6px; padding:1px 7px; direction:ltr; display:inline-block;
+  }
+  .fix{
+    margin-top:12px; padding:12px 14px; border-radius:10px;
+    background:rgba(52,211,153,.07); border:1px dashed rgba(52,211,153,.35);
+  }
+  .fix b{color:var(--accent-2)}
+  .impact{margin-top:10px; font-size:14.5px}
+  .impact b{color:#fca5a5}
+  pre{
+    direction:ltr; text-align:left; background:#060a16; border:1px solid var(--border);
+    border-radius:10px; padding:14px 16px; overflow-x:auto; font-size:13.5px; line-height:1.6;
+    font-family:ui-monospace,Consolas,monospace; margin:12px 0;
+  }
+  code{font-family:ui-monospace,Consolas,monospace; font-size:.92em; background:rgba(255,255,255,.06); padding:1px 6px; border-radius:5px; direction:ltr; display:inline-block}
+  pre code{background:none; padding:0; display:block}
+  .tbl-wrap{overflow-x:auto; margin:16px 0; border:1px solid var(--border); border-radius:var(--radius)}
+  table{width:100%; border-collapse:collapse; font-size:14.5px; min-width:620px}
+  th,td{padding:11px 13px; text-align:right; border-bottom:1px solid var(--border); vertical-align:top}
+  th{background:var(--panel-2); font-weight:700; color:#dbe3ff}
+  tr:last-child td{border-bottom:none}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.018)}
+  .phase{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px 20px; margin:14px 0; border-inline-start:5px solid var(--accent);
+  }
+  .phase.p0{border-inline-start-color:var(--p0)}
+  .phase.p1{border-inline-start-color:var(--p1)}
+  .phase.p2{border-inline-start-color:var(--p2)}
+  .phase.p3{border-inline-start-color:var(--p3)}
+  .phase h3{margin:0 0 6px; display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+  .phase .goal{color:var(--muted); font-size:14.5px; margin-bottom:10px}
+  ul.checks{list-style:none; padding:0; margin:8px 0}
+  ul.checks li{padding-inline-start:26px; position:relative; margin:7px 0; font-size:14.8px}
+  ul.checks li::before{content:"◆"; position:absolute; inset-inline-start:4px; top:0; color:var(--accent); font-size:11px}
+  ul.plain{padding-inline-start:22px; margin:8px 0}
+  ul.plain li{margin:6px 0}
+  .accept{
+    margin-top:12px; padding:11px 14px; border-radius:10px; font-size:14.5px;
+    background:rgba(56,189,248,.07); border:1px dashed rgba(56,189,248,.35);
+  }
+  .accept b{color:#7dd3fc}
+  .pill-row{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0}
+  .pill{font-size:12.5px; padding:3px 11px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.04); color:var(--muted)}
+  .note{
+    background:rgba(129,140,248,.08); border:1px solid rgba(129,140,248,.3);
+    border-radius:10px; padding:13px 16px; margin:16px 0; font-size:14.8px;
+  }
+  .note b{color:#c7d2fe}
+  footer{margin-top:60px; padding-top:20px; border-top:1px solid var(--border); color:var(--muted); font-size:13.5px}
+  hr{border:none; border-top:1px solid var(--border); margin:34px 0}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:760px){ .grid2{grid-template-columns:1fr} header.hero h1{font-size:26px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="kicker">تقرير فحص + خطة تنفيذ</span>
+  <h1>LinguaVerse — خطة التطوير والإصلاح الشاملة</h1>
+  <p>
+    فحص كامل للمستودع: تطبيق أندرويد (Compose + Room) وخادم Node/Express (Prisma + PostgreSQL)،
+    مع أولويات مرتّبة بالأثر، وخارطة تنفيذ مرحلية قابلة للقياس، واقتراحات تطوير المنتج.
+  </p>
+  <div class="meta-line">
+    <span>تاريخ الفحص: 2026-09-15</span>
+    <span>نطاق: Android + Backend</span>
+    <span>الطريقة: قراءة شيفرة + تحقّق تجريبي</span>
+  </div>
+</header>
+
+<div class="verdict">
+  <b>الحكم العام:</b>
+  التطبيق انتقل من «نموذج أولي يوهم بميزات» إلى مشروع له أساس هندسي حقيقي —
+  حَقن اعتماديات، تنقّل رسمي بـ <code>NavHost</code>، هجرات Room مُصدَّرة، منطق تصحيح مُختبَر،
+  خادم وسيط يُخفي مفتاح Gemini ويعمل فعليًا، وتدويل عربي/ألماني.
+  <br /><br />
+  <b>لكن</b> الخادم الجديد أضاف طبقة غير مُختبَرة وغير مُؤمَّنة، وفيه عيب واحد يُسقط العملية بالكامل،
+  وأصبح لدينا <b>ثلاثة مصادر حقيقة متراكبة</b> (Room المحلي، Supabase للمحتوى، Prisma للخادم) لا تتوافق مخططاتها.
+  الأولوية القادمة ليست ميزات جديدة، بل <b>تثبيت الخادم + توحيد مصدر بيانات واحد</b>.
+</div>
+
+<h2>1. ملخّص تنفيذي</h2>
+
+<div class="cards">
+  <div class="card p0"><div class="num">6</div><div class="lbl">مشاكل حرجة (P0) توقف الإطلاق</div></div>
+  <div class="card p1"><div class="num">9</div><div class="lbl">مشاكل عالية (P1) تُضعف الأمان/الثقة</div></div>
+  <div class="card acc"><div class="num">7</div><div class="lbl">مشاكل متوسطة (P2)</div></div>
+  <div class="card ok"><div class="num">2</div><div class="lbl">تحقّقات تجريبية أُجريت فعليًا</div></div>
+</div>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>البُعد</th><th>الحالة</th><th>الخلاصة</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>بناء تطبيق أندرويد</td><td><span class="badge ok">سليم</span></td><td>Gradle Wrapper موجود، لغة الـJVM مثبّتة، توقيع debug مُصلَح، <code>minify/shrink</code> مُفعَّل في الإصدار.</td></tr>
+    <tr><td>بناء الباك-إند</td><td><span class="badge ok">سليم</span></td><td><code>tsc --noEmit</code> نجح بلا أخطاء (تحقّق فعلي).</td></tr>
+    <tr><td>استقرار الباك-إند</td><td><span class="badge p0">حرج</span></td><td>أي خطأ من دالة <code>async</code> <b>يُسقط العملية كلها</b> — مُثبَت تجريبيًا.</td></tr>
+    <tr><td>أمان الباك-إند</td><td><span class="badge p0">حرج</span></td><td>تصعيد صلاحيات في تحديث الملف الشخصي، وغياب أي دور إداري على نقاط إنشاء المحتوى.</td></tr>
+    <tr><td>مصدر الحقيقة للبيانات</td><td><span class="badge p0">حرج</span></td><td>ثلاثة مخططات غير متوافقة: Room / Supabase / Prisma.</td></tr>
+    <tr><td>الحسابات والتقدّم</td><td><span class="badge p1">عالي</span></td><td>ملف محلي واحد <code>user_default</code>؛ لا تسجيل دخول في التطبيق رغم وجوده في الخادم.</td></tr>
+    <tr><td>جودة وتغطية الاختبارات</td><td><span class="badge p1">عالي</span></td><td>اختبار منطق التصحيح ممتاز، لكن الباقي اختبارات سقالة، ولا اختبارات للخادم، ولا CI.</td></tr>
+    <tr><td>التدويل و RTL</td><td><span class="badge ok">جيد</span></td><td>سلاسل مستخرجة و<code>values-ar</code>/<code>values-de</code>؛ تحتاج مراجعة RTL على جهاز حقيقي.</td></tr>
+    <tr><td>الصدق في العروض</td><td><span class="badge ok">جيد</span></td><td>درجة النطق المزيّفة أُزيلت، ورمز RECORD_AUDIO حُذف، ولوحة الصدارة مُعلَّمة «محاكاة».</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>2. نطاق الفحص والمنهجية</h2>
+
+<div class="grid2">
+  <div class="issue">
+    <h4 style="margin-top:0">ما فُحص</h4>
+    <ul class="plain">
+      <li>تطبيق أندرويد: نحو <b>42 ملف Kotlin / 7,100 سطر</b> — الطبقات، ViewModels، التنقّل، الثيم، الموارد، الاختبارات.</li>
+      <li>الباك-إند: نحو <b>31 ملف TypeScript</b> — المسارات، المتحكّمات، الوسائط، المُحقِّقات، مخطط Prisma، البذور.</li>
+      <li>البناء والاعتماديات: <code>build.gradle.kts</code>، <code>libs.versions.toml</code>، <code>tsconfig.json</code>، <code>.env.example</code>.</li>
+    </ul>
+  </div>
+  <div class="issue">
+    <h4 style="margin-top:0">ما تُحقِّق منه تجريبيًا</h4>
+    <ul class="plain">
+      <li><b>سلوك Express 4 مع الدوال غير المتزامنة:</b> شُغِّل خادم مصغّر بنفس الإصدار المُثبَّت (4.22.2) — النتيجة أدناه.</li>
+      <li><b>تصريف الباك-إند:</b> <code>npx tsc --noEmit</code> ← خرج نظيف (رمز الخروج 0).</li>
+      <li><b>هجرات قاعدة البيانات:</b> لا يوجد مجلد <code>prisma/migrations</code>.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="note">
+  <b>حدود الفحص:</b> لم يُشغَّل بناء أندرويد الكامل ولا اختبارات الوحدة في هذه الجلسة (يحتاج Android SDK وتحزيمًا طويلًا).
+  الباك-إند لم يُشغَّل بملف بيئة حقيقي ولا قاعدة بيانات فعلية. كل ما ورد كمؤكَّد إمّا شُغِّل فعليًا أو قُرئ مباشرة في الشيفرة.
+</div>
+
+<h2>3. المشاكل الحرجة <span class="badge p0">P0</span></h2>
+
+<div class="issue">
+  <div class="issue-head">
+    <span class="id">B1</span>
+    <span class="title">أي خطأ في دالة async يُسقط الخادم بالكامل</span>
+    <span class="badge p0">مؤكَّد تجريبيًا</span>
+  </div>
+  <p class="where">backend/src/index.ts · backend/src/controllers/*.ts · backend/src/middleware/errorHandler.ts</p>
+  <p>
+    Express 4 لا يلتقط الوعود المرفوضة من الدوال غير المتزامنة. كل المتحكّمات هنا <code>async</code>
+    وتُطلق <code>AppError</code> (نفاد حصة الذكاء، مفتاح غير مضبوط، عنصر غير موجود، خطأ Gemini…)،
+    ولا يوجد <code>asyncHandler</code> ولا <code>express-async-errors</code> ولا <code>process.on('unhandledRejection')</code>.
+    النتيجة: <code>errorHandler</code> لا يُستدعى أبدًا لهذه الحالات، وNode 24 يُنهي العملية.
+  </p>
+  <h4>ما أظهره التحقّق الفعلي</h4>
+<pre><code>express version: 4.22.2
+app.get('/async', async (req,res)=&gt;{ throw new Error('boom-from-async'); });
+
+Error: boom-from-async
+    at Layer.handle [as handle_request] (.../express/lib/router/layer.js:95:5)
+    at Route.dispatch (.../express/lib/router/route.js:119:3)
+Node.js v24.19.0      &lt;-- العملية انتهت، ولم يصل الطلب إلى errorHandler</code></pre>
+  <div class="impact">
+    <b>الأثر:</b> استهلاك حصة الذكاء اليومية، أو سقوط المزوّد، أو تغيير مفتاح Gemini — كلها <b>تُسقط الخدمة كلها لكل المستخدمين</b>،
+    ولا تُعيد خطأً لطيفًا. هذا أخطر بند في التقرير.
+  </div>
+  <div class="fix">
+    <b>الإصلاح (الأسهل أولًا):</b>
+    <ul class="plain" style="margin:8px 0 0">
+      <li>تثبيت <code>express-async-errors</code> واستدعاؤه في أول <code>index.ts</code> — سطر واحد يغطّي كل المسارات.</li>
+      <li>أو الترقية إلى Express 5 (يعالج الرفض غير المتزامن أصلًا) — مع فحص تبعات النقل.</li>
+      <li>وحدّ أخير للأمان: <code>process.on('unhandledRejection')</code> و<code>uncaughtException</code> مع تسجيل ثم خروج مُرتَّب.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">B2</span><span class="title">تصعيد صلاحيات: المستخدم يكتب نقاطه وعملاته بنفسه</span><span class="badge p0">حرج</span></div>
+  <p class="where">backend/src/controllers/user.controller.ts · updateProfile</p>
+<pre><code>const user = await prisma.user.update({
+  where: { id: req.user!.userId },
+  data: req.body,                       // &lt;-- كل جسم الطلب يُكتب مباشرة في قاعدة البيانات
+  select: { id:true, username:true, email:true, xp:true, coins:true, streakCount:true },
+});</code></pre>
+  <div class="impact">
+    <b>الأثر:</b> طلب <code>PUT /api/users/me</code> بجسم <code>{"xp": 999999, "coins": 999999}</code> يمنح المستخدم أي رصيد يريده.
+    ولا يوجد مُحقِّق (validator) على هذا المسار أصلًا. أي اقتصاد نقاط/جوائز يصبح بلا معنى.
+  </div>
+  <div class="fix">
+    <b>الإصلاح:</b> قائمة حقول بيضاء صريحة (<code>username</code>، <code>avatarUrl</code>، <code>dailyGoalXp</code>، <code>nativeLanguageId</code>)،
+    ومنع <code>xp/coins/streakCount/todayXp</code> من أي مصدر عميلي؛ لا تُعدَّل إلا من منطق الخادم بعد التحقق من الإنجاز.
+  </div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">B3</span><span class="title">لا يوجد دور إداري: أي مستخدم مُسجَّل ينشر محتوى</span><span class="badge p0">حرج</span></div>
+  <p class="where">backend/src/routes/lesson.routes.ts · vocabulary.routes.ts · language.routes.ts</p>
+  <p>
+    نقاط الإنشاء (<code>POST /units/:id/lessons</code>، <code>/lessons/:id/exercises</code>،
+    <code>/languages/:code/vocabulary</code>، <code>/languages</code>…) محميّة بـ <code>authenticate</code> فقط،
+    وهذا يعني <b>توثيقًا</b> لا <b>تصريحًا</b>. ولا يوجد حقل <code>role</code> في مخطط Prisma إطلاقًا.
+  </p>
+  <div class="impact">
+    <b>الأثر:</b> أي مستخدم ينشئ حسابًا مجانيًا ثم يكتب محتوى تعليميًا يصل لبقية المتعلمين، أو يعدّل اللغات ويمسحها.
+  </div>
+  <div class="fix">
+    <b>الإصلاح:</b> إضافة <code>role</code> إلى <code>User</code>، ووسيط <code>requireRole('admin'|'editor')</code> بعد <code>authenticate</code>،
+    ونشر المحتوى عبر لوحة إدارة حقيقية لا عبر نقاط API مفتوحة لأي حساب.
+  </div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">B4</span><span class="title">التسجيل لا يفحص تكرار البريد → خطأ Prisma غير مُعالَج</span><span class="badge p0">حرج</span></div>
+  <p class="where">backend/src/controllers/auth.controller.ts · register</p>
+  <p>
+    يُفحَص تكرار <code>username</code> فقط، بينما <code>email</code> فريد في المخطط.
+    أي إعادة تسجيل بنفس البريد تُطلق <code>P2002</code> من Prisma — وهو ليس <code>AppError</code>،
+    وحتى لو وصل إلى <code>errorHandler</code> فالمعالجة الحالية تُعيد <b>500</b> وليس <b>409</b>.
+  </p>
+  <div class="fix">
+    <b>الإصلاح:</b> فحص مسبق للبريد (أو الاثنين في استعلام واحد)، <b>و</b> خريطة أخطاء Prisma:
+    <code>P2002→409</code>، <code>P2025→404</code>، <code>P2003→409</code>، مع عدم تسريب نص الخطأ في الإنتاج.
+  </div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">B5</span><span class="title">لا هجرات لقاعدة البيانات — المخطط غير قابل لإعادة الإنتاج</span><span class="badge p0">حرج</span></div>
+  <p class="where">backend/prisma/ — يحتوي <code>schema.prisma</code> و<code>seed.ts</code> فقط، ولا يوجد <code>migrations/</code></p>
+  <p>
+    سكربتات <code>db:migrate</code> تشير إلى <code>prisma migrate dev</code>، لكن لا يوجد أي ملف هجرة مُلتزَم في المستودع،
+    فالعمل الفعلي جرى عبر <code>db push</code>. هذا يعني أن قاعدة الإنتاج لا يمكن إعادة بنائها من الشيفرة،
+    ولا يمكن مراجعة تغييرات المخطط، ولا الرجوع عنها.
+  </p>
+  <div class="fix">
+    <b>الإصلاح:</b> توليد هجرة أساسية (<code>migrate dev --name init</code>) والالتزام بها، ثم <code>prisma migrate deploy</code> في النشر.
+    <span class="pill">اعتماد على B1 أولًا، لأن أي خطأ سيمنع النشر</span>
+  </div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">A1</span><span class="title">ثلاثة مصادر حقيقة متراكبة بمخططات غير متوافقة</span><span class="badge p0">معماري</span></div>
+  <p>التطبيق يتكلّم مع ثلاث جهات بثلاث «لغات بيانات» مختلفة:</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>المصدر</th><th>الاستخدام</th><th>شكل البيانات</th><th>المشكلة</th></tr></thead>
+    <tbody>
+      <tr><td>Room (محلي)</td><td>قراءة/كتابة دائمة، تقدّم المستخدم</td><td><code>languageCode</code> نصّي</td><td>المصدر الفعلي الحالي للحالة</td></tr>
+      <tr><td>Supabase REST</td><td>مزامنة المحتوى العام عند أول إقلاع</td><td><code>language_code</code>، <code>vocabularies</code>، <code>is_default</code></td><td>أعمدة لا وجود لها في مخطط الخادم</td></tr>
+      <tr><td>Prisma/Postgres</td><td>المحتوى/الحسابات/التقدّم في الخادم</td><td><code>languageId</code> مفتاح UUID، جدول <code>vocabulary</code>، <code>cefrLevels</code></td><td>لا يتوافق مع أيٍّ من الاثنين أعلاه</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="impact">
+    <b>الأثر:</b> لا يمكن نقل التطبيق ليقرأ من خادمك دون طبقة تحويل يدوية؛ وتغيير محتوى في الخادم لا يظهر في التطبيق؛
+    وإصلاح عطل في مصدر واحد يترك الاثنين الآخرين معطوبين. كل ذلك يضاعف تكلفة أي ميزة قادمة.
+  </div>
+  <div class="fix">
+    <b>الإصلاح المقترح — قرار واحد، لا ثلاثة:</b>
+    اختيار <b>الخادم (Prisma) كمصدر حقيقة وحيد</b>، وإبقاء Room كـ«ذاكرة مؤقتة غير متصلة» تُغذّى من API مُصدَّر من الخادم،
+    وإلغاء استدعاء Supabase المباشر من التطبيق (أو توحيد مخططه مع الخادم إن كان مقصودًا كطبقة قراءة فقط).
+    ثم نقطة مزامنة واحدة <code>GET /api/sync?since=…</code> تُعيد المحتوى في شكل متوافق مع كيانات Room.
+  </div>
+</div>
+
+<h2>4. المشاكل العالية <span class="badge p1">P1</span></h2>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">B6</span><span class="title">رموز التحديث غير قابلة للإبطال، ولا خروج (logout)</span><span class="badge p1">أمان</span></div>
+  <p class="where">backend/src/utils/jwt.ts · auth.controller.ts</p>
+  <p>
+    <code>refreshToken</code> يُوقَّع بنفس <code>JWT_SECRET</code> ومدّة 7 أيام، ولا يوجد جدول للرموز.
+    لا <code>/logout</code>، ولا تدوير (rotation)، ولا كشف إعادة استخدام. سرقة رمز واحد = وصول أسبوع كامل غير قابل للسحب.
+  </p>
+  <div class="fix"><b>الإصلاح:</b> جدول <code>RefreshToken</code> (hash + انتهاء + إبطال + عائلة جلسة)، تدوير عند كل تحديث، نقطة <code>/logout</code>، ومفتاح منفصل لرموز التحديث.</div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">B7</span><span class="title">لا حدّ لمعدّل الطلبات على المصادقة (تخمين كلمات المرور)</span><span class="badge p1">أمان</span></div>
+  <p class="where">backend/src/routes/auth.routes.ts · utils/rateLimit.ts</p>
+  <p>القدر الوحيد من الحدود يخصّ نقاط الذكاء الاصطناعي. <code>/login</code> و<code>/register</code> و<code>/refresh</code> مفتوحة تمامًا لتخمين غير محدود بأسماء مستخدمين شائعة.</p>
+  <div class="fix"><b>الإصلاح:</b> محدِّد معدّل بالمفتاح <code>IP + username</code>، مع قفل تدريجي وتأخير مُتعمَّد عند الفشل، وترقيته لاحقًا إلى مخزن مشترك عند التوسّع.</div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">B8</span><span class="title">الحصة اليومية تُحتسب على IP الوسيط لا على المستخدم</span><span class="badge p1">أمان/تكلفة</span></div>
+  <p class="where">backend/src/index.ts · ai.controller.ts (clientIdentity / req.ip)</p>
+  <p>
+    لا يوجد <code>app.set('trust proxy', …)</code>. خلف أي وسيط نشر (Railway/Render/Nginx) يصبح <code>req.ip</code> عنوان الوسيط نفسه،
+    فيتقاسم كل المستخدمين حصة واحدة — أي أن أول 300 طلب تُستهلك ثم يُحجب الجميع.
+  </p>
+  <div class="fix"><b>الإصلاح:</b> ضبط <code>trust proxy</code> بعدد القفزات الفعلي، وتفضيل مُعرّف الجهاز/المستخدم على IP، والانتقال إلى حصة مبنية على <code>userId</code> بعد إضافة الحسابات.</div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">B9</span><span class="title">لا تسجيل ولا رصد ولا مقاييس</span><span class="badge p1">تشغيل</span></div>
+  <p class="where">backend/src/index.ts</p>
+  <p>لا <code>morgan</code>/<code>pino</code>، ولا مُعرّف طلب، ولا مقاييس، ولا ربط أخطاء بمستخدم معيّن. تشخيص أي شكوى إنتاج سيكون تخمينًا، خصوصًا مع B1 الذي يُسقط العملية.</p>
+  <div class="fix"><b>الإصلاح:</b> تسجيل مُهيكل (مستوى + request-id + مسار + رمز + زمن)، وتنبيه على معدّل الأخطاء وعلى خروج العملية، وربط اختياري بخدمة رصد.</div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">B10</span><span class="title">تحليل ردّ الذكاء الاصطناعي هشّ، وفيه «نجاح مزيف» خفيف</span><span class="badge p1">موثوقية</span></div>
+  <p class="where">backend/src/controllers/ai.controller.ts</p>
+  <p>
+    المتحكّم يفرض على النموذج صيغة نصّية صارمة (<code>REPLY:</code> / <code>SCORE:</code> / <code>FEEDBACK:</code>) ثم يحلّلها سطرًا سطرًا.
+    أي انحراف بسيط في الإخراج يُنتج قيمة افتراضية صامتة — مثل <code>score = 85</code> عند فشل التحليل، وهو نجاح لا يعكس تقييمًا حقيقيًا.
+    كما لا يوجد مهلة/إعادة محاولة على نداء Gemini نفسه.
+  </p>
+  <div class="fix">
+    <b>الإصلاح:</b> طلب <b>JSON مُهيَّكل</b> من النموذج (<code>responseMimeType: application/json</code> + مخطط)،
+    ورفض النتيجة عند فشل التحليل بدل استخدام قيم افتراضية، ومهلة صريحة مع إعادة محاولة محدودة.
+  </div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">A2</span><span class="title">درجات المهارات في الملف الشخصي قيم ثابتة لا يحدّثها شيء</span><span class="badge p1">صدق المنتج</span></div>
+  <p class="where">app/src/main/java/com/example/data/model/Models.kt · UserProfile</p>
+<pre><code>val speakingScore: Int = 78,
+val listeningScore: Int = 85,
+val grammarScore: Int = 72,
+val vocabularyScore: Int = 90,
+val readingScore: Int = 88,
+val writingScore: Int = 75,</code></pre>
+  <div class="impact">
+    <b>الأثر:</b> يعرض التطبيق على المتعلم «مستوى مهاراته» بأرقام تبدو مقيسة، لكن لا مسار في الشيفرة يحدّثها.
+    هذا نفس صنف المشكلة التي أُزيلت من شاشة النطق: ادّعاء قدرة غير موجودة.
+  </div>
+  <div class="fix">
+    <b>الإصلاح:</b> إمّا ربط كل درجة بمقياس فعلي (نسبة إجابات صحيحة لكل نوع تمرين، عدد بطاقات مُتقَنة، تقدّم دروس)،
+    وإمّا حذف الحقول وعرض «لا بيانات كافية بعد» — لا أرقام مصطنعة.
+  </div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">A3</span><span class="title">التكرار المتباعد مُعلَن في المخطط وغير مُنفَّذ في الواجهة</span><span class="badge p1">فجوة ميزة</span></div>
+  <p class="where">Models.kt (<code>Vocabulary.needsReview</code>، <code>Flashcard.intervalDays</code>، <code>Flashcard.isMastered</code>) · LinguaVerseDao</p>
+  <p>
+    الحقول موجودة في كيانات Room وفي مخطط Prisma (مع <code>easeFactor</code> و<code>nextReviewAt</code>)،
+    والمفردات تُعلن «بطاقات تكرار متباعد»، لكن لا يوجد منطق جدولة ولا جدول مراجعة في التطبيق —
+    والحقول تُنسخ فقط من الـAPI ولا تُستخدم أبدًا.
+  </p>
+  <div class="fix"><b>الإصلاح:</b> تنفيذ خوارزمية SM-2 في طبقة النطاق (دالة نقية قابلة للاختبار مثل <code>AnswerGrader</code>)، وجدول «مراجعة اليوم» مبني على <code>nextReviewAt</code>.</div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">A4</span><span class="title">لا حسابات: كل التقدّم محلي على جهاز واحد</span><span class="badge p1">فجوة ميزة</span></div>
+  <p class="where">app (لا توجد شاشة دخول) مقابل backend/src/controllers/auth.controller.ts (كامل وغير مستخدم)</p>
+  <p>
+    التطبيق يعمل بملف ثابت <code>user_default</code> في Room. لا تسجيل ولا دخول ولا مزامنة،
+    رغم أن الخادم يملك تسجيلًا ودخولًا وأدوارًا وتقدّمًا ومزامنة جلسات كاملة لا يستدعيها أي كود في التطبيق.
+  </p>
+  <div class="impact">
+    <b>الأثر:</b> تغيير الهاتف أو إعادة تثبيت التطبيق = فقدان كل التقدّم. هذا وحده يمنع نشر التطبيق تجاريًا.</div>
+  <div class="fix"><b>الإصلاح:</b> ربط الحساب بالتطبيق (شاشة دخول + مخزن رموز آمن + مزامنة تقدّم عند الاتصال)، بعد إنهاء B1–B7.</div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">A5</span><span class="title">المزامنة لا تُحدِّث المحتوى المتغيّر</span><span class="badge p1">صحة بيانات</span></div>
+  <p class="where">LinguaVerseDao.mergePublicContent (كل الإدراج بـ<code>OnConflictStrategy.IGNORE</code>) · LinguaVerseRepository.initializeSeedData</p>
+  <p>
+    المزامنة تُدرج فقط ما هو غير موجود؛ فإن صحّحتَ نصّ تمرين أو ترجمة على الخادم، فالأجهزة الحالية لن ترى التصحيح أبدًا.
+    كما أن المزامنة تُستدعى مرة واحدة عند الإقلاع فقط، ونتيجتها لا تُخزَّن، فتفشل بصمت عند غياب الشبكة.
+  </p>
+  <div class="fix"><b>الإصلاح:</b> حقل <code>updatedAt</code> في الكيانات، ومزامنة تدريجية بـ<code>?since=</code>، و<code>REPLACE</code> مقصود لجداول المحتوى فقط (لا جداول التقدّم)، مع حالة مرئية للمستخدم.</div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">D1</span><span class="title">لا اختبارات للخادم ولا تكامل مستمر في أي من الجانبين</span><span class="badge p1">جودة</span></div>
+  <p class="where">backend (لا محرّك اختبار في package.json) · لا مجلد .github/workflows</p>
+  <p>
+    الخادم بلا أي اختبار، و<span class="pill">tsc --noEmit</span> هو التحقق الوحيد. الجانب الأندرويدي فيه اختبار منطق تصحيح ممتاز،
+    لكن <code>ExampleUnitTest</code> و<code>ExampleInstrumentedTest</code> بقايا سقالة، ولا يوجد CI يمنع دمج كسر.
+  </p>
+  <div class="fix"><b>الإصلاح:</b> إضافة <code>vitest</code> + <code>supertest</code> للخادم، وCI يشغّل: تصريف + اختبارات أندرويد + اختبارات الخادم + فحص تنسيق.</div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">A6</span><span class="title">تعريف لوحة الصدارة لا يزال محاكاة على العميل</span><span class="badge p1">فجوة ميزة</span></div>
+  <p class="where">LeaderboardScreen (مُعلَّمة الآن «بيانات محاكاة» — حسن)</p>
+  <p>الشفافية موجودة الآن، لكن الميزة نفسها وهمية: الترتيب مكتوب في الشاشة ولا يعتمد على مستخدمين حقيقيين.</p>
+  <div class="fix"><b>الإصلاح:</b> بعد إضافة الحسابات: نقطة ترتيب على الخادم (أسبوعي/شهري) بفهرسة على <code>todayXp</code>/<code>xp</code>، وحالات فراغ حقيقية.</div>
+</div>
+
+<div class="issue">
+  <div class="issue-head"><span class="id">A7</span><span class="title">فجوات ثقة صغيرة متبقية في الموارد والإعداد</span><span class="badge p1">نظافة</span></div>
+  <p class="where">.env.example · metadata.json · app/build.gradle.kts</p>
+  <ul class="plain">
+    <li><code>.env.example</code> في الجذر لا يزال يعرض <code>GEMINI_API_KEY=MY_GEMINI_API_KEY</code> وهو <b>غير مستخدم في التطبيق</b> — يقود المطوّر لخطأ إعداد، والفكرة الصحيحة أن المفتاح للخادم فقط.</li>
+    <li><code>metadata.json</code> يعلن <code>MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API</code> وهذا صحيح الآن عبر الوسيط، لكن لم يبقَ ما يبرّره في التطبيق نفسه.</li>
+    <li>إضافة <code>google-services</code> ما زالت مفعّلة بلا <code>google-services.json</code> (تحذير فقط) — بقايا مسار Firebase غير المستخدم.</li>
+  </ul>
+</div>
+
+<h2>5. المشاكل المتوسطة <span class="badge p2">P2</span></h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>#</th><th>المشكلة</th><th>الموقع</th><th>الإصلاح المقترح</th></tr></thead>
+  <tbody>
+    <tr><td>B11</td><td>عدم توافق الأنواع: <code>@types/express@5</code> مع <code>express@4</code> يُخفي أخطاء واجهة ويُسهّل كتابة كود لا يعمل وقت التشغيل.</td><td>backend/package.json</td><td>توحيد الإصدارين (اختر 4 أو انتقل إلى 5 كاملًا).</td></tr>
+    <tr><td>B12</td><td>وسيط <code>validate</code> يُسند <code>req.query</code>/<code>req.params</code> إلى <code>undefined</code> لأن مخططات الجسم فقط لا تُعرِّفها.</td><td>backend/src/middleware/validate.ts</td><td>إسناد مشروط: لا تلمس قيمة لم يُعرّفها المخطط.</td></tr>
+    <tr><td>B13</td><td>جسم JSON غير صالح يُنتج 500 (خطأ <code>SyntaxError</code> ليس <code>AppError</code>) بدل 400.</td><td>middleware/errorHandler.ts</td><td>تمييز أخطاء التحليل وأخطاء Prisma بنقطة تحويل واحدة إلى رموز HTTP صحيحة.</td></tr>
+    <tr><td>B14</td><td>لا إغلاق مُرتَّب (لا <code>prisma.$disconnect</code> عند SIGTERM) ولا فحص صحة يتحقّق من قاعدة البيانات.</td><td>backend/src/index.ts</td><td><code>/health</code> يفحص اتصال DB، ومعالجة SIGTERM/SIGINT لإغلاق نظيف.</td></tr>
+    <tr><td>B15</td><td>لا ضغط استجابات، و<code>CORS_ORIGIN</code> أصل واحد بلا دعم أصول متعددة/تطبيقات جوال.</td><td>backend/src/index.ts</td><td>إضافة <code>compression</code>، وقائمة أصول، وفصل سياسة CORS عن الافتراضي.</td></tr>
+    <tr><td>A8</td><td>لا فحص تنسيق/جودة في أي جانب: لا <code>ktlint</code>/<code>detekt</code>/<code>.editorconfig</code> ولا <code>eslint</code>/<code>prettier</code>.</td><td>الجذر · app · backend</td><td>إضافة الأدوات وربطها بالـCI، مع قواعد متساهلة أولًا ثم تشديد تدريجي.</td></tr>
+    <tr><td>A9</td><td>تفاصيل Compose: استيرادات wildcard، أيقونة الرجوع غير معكوسة تلقائيًا في RTL، و<code>material-icons-extended</code> الضخمة مستخدمة على نطاق واسع.</td><td>app/src/main/java/**</td><td>استبدال بـ<code>AutoMirrored</code>، تقليل الأيقونات إلى المستخدم فعلًا لتقليص حجم الحزمة.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>6. المشاكل المنخفضة <span class="badge p3">P3</span></h2>
+<ul class="plain">
+  <li><b>تسمية الحزمة:</b> <code>namespace = "com.example"</code> ما زال يظهر في كل أثر خطأ — تغييره إلى نطاق المشروع الحقيقي.</li>
+  <li><b>بقايا سقالة:</b> <code>ExampleUnitTest</code>/<code>ExampleInstrumentedTest</code> بلا قيمة، و<code>README.md</code> ما زال نص AI Studio الافتراضي ولا يشرح تشغيل الخادم.</li>
+  <li><b>توثيق الباك-إند:</b> لا <code>README</code> للخادم، ولا وصف لمسارات الـAPI، ولا ملف تشغيل محلي (compose) لقاعدة البيانات.</li>
+  <li><b>حقول ميتة:</b> <code>ReadingStory</code> وبقايا نماذج غير مستخدمة، ومُدخلات غير مستخدمة في كتالوج الإصدارات (camera/location/accompanist/credentials).</li>
+  <li><b>الوصولية:</b> لا وصف محتوى (content description) منتظم على العناصر التفاعلية، ولا مراجعة تباين في الوضع الداكن.</li>
+</ul>
+
+<h2>7. خارطة التنفيذ المقترحة</h2>
+
+<div class="note">
+  <b>قاعدة التنفيذ:</b> لا إعادة كتابة من الصفر. كل مرحلة تحافظ على السلوك العامل، وتُصرَّف وتُختبَر قبل الدمج،
+  وتبقى قابلة للتراجع بخطوة واحدة. ولا تُبنى ميزة جديدة فوق عيب أمني مفتوح.
+</div>
+
+<div class="phase p0">
+  <h3><span class="badge p0">المرحلة A</span> تثبيت الخادم وإغلاق الثغرات الحرجة
+    <span class="pill">الأولوية القصوى</span></h3>
+  <div class="goal">الهدف: لا يسقط الخادم من خطأ متوقَّع، ولا يمكن لأي مستخدم أن يرفع رصيده أو ينشر محتوى.</div>
+  <ul class="checks">
+    <li>معالجة الرفض غير المتزامن (B1) + معالج أخطاء موحّد يغطّي Prisma وJSON والتحقق.</li>
+    <li>قائمة حقول بيضاء في <code>updateProfile</code>، ومنع الحقول الاقتصادية من العميل (B2).</li>
+    <li><code>role</code> على المستخدم + <code>requireRole</code> على كل نقطة كتابة محتوى (B3).</li>
+    <li>فحص تكرار البريد + خريطة أخطاء Prisma إلى رموز HTTP صحيحة (B4).</li>
+    <li>هجرة Prisma أساسية مُلتزَمة في المستودع (B5).</li>
+  </ul>
+  <div class="accept"><b>معيار القبول:</b> اختبار يُطلق خطأً داخل مسار <code>async</code> ويؤكّد أنه يُعيد رمزًا صحيحًا <b>والعملية ما زالت حيّة</b>؛ واختباران يثبتان رفض رفع <code>xp</code> ورفض المستخدم العادي لنشر درس.</div>
+</div>
+
+<div class="phase p0">
+  <h3><span class="badge p0">المرحلة B</span> قرار مصدر الحقيقة الواحد</h3>
+  <div class="goal">الهدف: مصدر واحد للمحتوى، وبقاء Room ذاكرة مؤقتة فقط.</div>
+  <ul class="checks">
+    <li>اعتماد Prisma/Postgres كمصدر الحقيقة، وإلغاء قراءة Supabase المباشرة من التطبيق (A1).</li>
+    <li>بناء نقاط مزامنة عامة على الخادم تُعيد المحتوى بحقول متوافقة مع كيانات Room.</li>
+    <li>مزامنة تدريجية بـ<code>updatedAt/since</code> مع <code>REPLACE</code> لجداول المحتوى فقط (A5).</li>
+    <li>حذف الحقول الميتة التي كان الاستيراد الخارجي يملؤها ثم لا تستخدمها الواجهة (A3، P3).</li>
+  </ul>
+  <div class="accept"><b>معيار القبول:</b> تعديل عنوان درس في قاعدة الخادم يظهر في التطبيق بعد المزامنة، دون أن يُلمس تقدّم المتعلم.</div>
+</div>
+
+<div class="phase p1">
+  <h3><span class="badge p1">المرحلة C</span> الأمان التشغيلي والجلسات</h3>
+  <div class="goal">الهدف: جلسات قابلة للسحب، وحدود طلبات، ورؤية لما يجري على الخادم.</div>
+  <ul class="checks">
+    <li>جدول رموز تحديث مع تدوير وإبطال ونقطة خروج (B6).</li>
+    <li>تحديد معدّل على المصادقة ونقاط الكتابة (B7).</li>
+    <li><code>trust proxy</code> وحصة قائمة على الهوية لا على IP (B8).</li>
+    <li>تسجيل مُهيكل + request-id + تنبيهات (B9).</li>
+    <li>صحة تفحص قاعدة البيانات، وإغلاق مُرتَّب، وضغط استجابات (B14، B15).</li>
+  </ul>
+  <div class="accept"><b>معيار القبول:</b> <code>logout</code> يُبطل الرمز فعليًا (طلب لاحق يعيد 401)، ومحاولات دخول فاشلة متكررة تُقفل تدريجيًا، وكل طلب يظهر في السجل بمُعرّفه.</div>
+</div>
+
+<div class="phase p1">
+  <h3><span class="badge p1">المرحلة D</span> صدق المحتوى المقدَّم للمتعلّم</h3>
+  <div class="goal">الهدف: كل رقم يظهر للمستخدم مسنود بقياس فعلي أو مُعلَّم بوضوح.</div>
+  <ul class="checks">
+    <li>ربط درجات المهارات بمقاييس حقيقية (صحيح/خطأ لكل نوع تمرين، بطاقات مُتقَنة، دروس مكتملة) أو حذفها (A2).</li>
+    <li>تنفيذ التكرار المتباعد SM-2 في طبقة النطاق + جدول «مراجعة اليوم» (A3).</li>
+    <li>تحويل تحليل ردّ الذكاء إلى JSON مُهيَّكل مع رفض صريح عند فشل التحليل بدل القيم الافتراضية (B10).</li>
+  </ul>
+  <div class="accept"><b>معيار القبول:</b> اختبارات وحدة لخوارزمية المراجعة، ولا يظهر في الواجهة أي رقم غير مشتق من مخزن بيانات.</div>
+</div>
+
+<div class="phase p2">
+  <h3><span class="badge p2">المرحلة E</span> الحسابات والمزامنة ولوحة الصدارة الحقيقية</h3>
+  <div class="goal">الهدف: التقدّم لا يُفقد بتغيير الجهاز، والترتيب يعكس مستخدمين حقيقيين.</div>
+  <ul class="checks">
+    <li>شاشة دخول/تسجيل مربوطة بنقاط الخادم، وتخزين الرموز في مخزن آمن (لا في ملف عادي).</li>
+    <li>مزامنة تقدّم ثنائية الاتجاه مع حلّ التعارض (الأحدث يفوز + دمج إحصاءات التعلم) (A4).</li>
+    <li>نقطة ترتيب على الخادم وفهرسة مناسبة، محل لوحة المحاكاة (A6).</li>
+  </ul>
+  <div class="accept"><b>معيار القبول:</b> إكمال درس على جهاز ثم تسجيل الدخول على آخر يُظهر نفس التقدّم و XP.</div>
+</div>
+
+<div class="phase p2">
+  <h3><span class="badge p2">المرحلة F</span> الجودة والبناء الآلي والتنسيق</h3>
+  <div class="goal">الهدف: لا يدمج أحد كسرًا في البناء أو السلوك.</div>
+  <ul class="checks">
+    <li>اختبارات خادم (تجريبي + تكاملي) واختبارات أندرويد فاعلة تُستبدل بها اختبارات السقالة (D1).</li>
+    <li>CI: تصريف أندرويد + اختبارات الوحدة + اختبارات الخادم + فحص تنسيق.</li>
+    <li><code>ktlint</code>/<code>detekt</code>/<code>.editorconfig</code> و<code>eslint</code>/<code>prettier</code> على الجانبين (A8).</li>
+    <li>تنظيف الموارد والإعداد وREADME الخادم (A7، P3).</li>
+  </ul>
+  <div class="accept"><b>معيار القبول:</b> كل طلب دمج يُشغِّل الفحوص ويُفشِل عند أي كسر، ويُنتج تقريرًا مقروءًا.</div>
+</div>
+
+<h2>8. اقتراحات تطوير المنتج</h2>
+
+<h3>8.1 ميزات عالية القيمة الجاهزة للبناء على ما هو موجود</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>الميزة</th><th>لماذا الآن</th><th>الأساس الموجود</th></tr></thead>
+  <tbody>
+    <tr><td><b>نطق حقيقي مع تقييم</b></td><td>الميزة الأكثر طلبًا في تطبيقات اللغات، وشاشة النطق الحالية عرض فقط بلا تسجيل.</td><td>إذن وإطار عمل سليم + مكان محجوز في الواجهة؛ يحتاج التعرف على الكلام ومعالجة إذن صحيحة.</td></tr>
+    <tr><td><b>مراجعة متباعدة (SM-2)</b></td><td>يرفع الاحتفاظ بالمفردات ويجعل «بطاقات المراجعة» حقيقة لا وعدًا.</td><td>الحقول موجودة في Room وPrisma، تحتاج منطقًا في طبقة النطاق وواجهة مراجعة.</td></tr>
+    <tr><td><b>اختبار تحديد المستوى (CEFR)</b></td><td>ينقل المستخدم من A1 الثابت لكل أحد إلى مسار مناسب، ويرفع أول جلسة.</td><td>تمرينات ودرجات ومستويات معرّفة؛ يحتاج مجموعة أسئلة محكَّمة وقواعد تصنيف.</td></tr>
+    <tr><td><b>معلّم ذكي بتدفّق حرفي</b></td><td>الردّ التدريجي يحوّل الانتظار إلى إحساس بالحوار، وكلفته معقولة على الخادم.</td><td>الوسيط يعمل؛ يحتاج بثًّا على الخادم ثم على الـHTTP في التطبيق.</td></tr>
+    <tr><td><b>صوت بشري للمحتوى</b></td><td>النطق الآلي يعلّم نطقًا متوسطًا؛ التسجيلات الحقيقية ترفع الجودة وتميّز المنتج.</td><td>حقل <code>audioUrl</code> موجود في المخطط ولم يُستثمر بعد.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>8.2 ميزات تُصنع فرقًا في الاستخدام اليومي</h3>
+<div class="pill-row">
+  <span class="pill">تذكيرات السلاسل (إشعارات محلية أولًا ثم مدفوعة)</span>
+  <span class="pill">تحدي يومي وهدف قابل للتعديل</span>
+  <span class="pill">وضع بلا اتصال صريح مع حالة مزامنة مرئية</span>
+  <span class="pill">مسار مراجعة الأخطاء الشخصي</span>
+  <span class="pill">حصيلة نهاية الأسبوع (تقرير تقدّم)</span>
+  <span class="pill">إمكانية وصول كاملة (قارئ شاشة + تباين)</span>
+  <span class="pill">أدوات Android: بطاقة مصغّرة «كلمة اليوم»</span>
+  <span class="pill">تحليل المنتج (أحداث مجهولة الهوية) لمعرفة أين يتوقف المستخدم</span>
+</div>
+
+<h3>8.3 تحسينات هندسية تدفع السرعة لاحقًا</h3>
+<ul class="plain">
+  <li><b>وحدة مزامنة واحدة</b> تُستدعى من كل الشاشات بدل منطق متفرّق — تجعل الوضع بلا اتصال قابلًا للاختبار.</li>
+  <li><b>طبقة نطاق أوسع</b> على نمط <code>AnswerGrader</code>: التصحيح والجدولة والتقدّم واقتراح الدرس التالي كدوال نقية.</li>
+  <li><b>اختبارات لقطات شاشة</b> (roborazzi مُهيّأة بالفعل) لشاشات الدرس والمنزل لمنع الانحدار البصري في الوضعين الفاتح والداكن.</li>
+  <li><b>بيئات منفصلة</b> (تطوير/اختبار/إنتاج) بمتغيّرات واضحة، وقاعدة تجريبية لا تُلمس منها بيانات المستخدمين.</li>
+</ul>
+
+<h2>9. خطة تصاعدية مقترحة (أربعة أسابيع)</h2>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>الأسبوع</th><th>التركيز</th><th>المُخرج الملموس</th></tr></thead>
+  <tbody>
+    <tr><td>الأول</td><td>المرحلة A كاملة</td><td>خادم لا يسقط، وثغرات الصلاحيات مغلقة، وأول هجرة مُلتزَمة.</td></tr>
+    <tr><td>الثاني</td><td>المرحلة B + بداية C</td><td>مصدر بيانات واحد، ونقطة مزامنة، وجلسات قابلة للسحب.</td></tr>
+    <tr><td>الثالث</td><td>إكمال C + المرحلة D</td><td>رصد وتسجيل ومعدّلات، ودرجات حقيقية، وتكرار متباعد يعمل.</td></tr>
+    <tr><td>الرابع</td><td>المرحلة E + CI</td><td>حساب ومزامنة تقدّم، ولوحة صدارة حقيقية، وCI يُفشل عند الكسر.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>10. مؤشرات النجاح</h2>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>المؤشّر</th><th>القيمة الحالية</th><th>الهدف بعد التنفيذ</th></tr></thead>
+  <tbody>
+    <tr><td>أخطاء تُسقط الخادم</td><td>أي خطأ متزامن متوقَّع</td><td>صفر — كل خطأ يُعاد كرمز HTTP مناسب</td></tr>
+    <tr><td>نقاط API محميّة بتصريح لا توثيق فقط</td><td>0 من نقاط الكتابة</td><td>100%</td></tr>
+    <tr><td>هجرات قاعدة بيانات مُلتزَمة</td><td>0</td><td>هجرة أساسية + هجرة لكل تغيير مخطط</td></tr>
+    <tr><td>مصادر حقيقة للمحتوى</td><td>3 غير متوافقة</td><td>1 (الخادم) + ذاكرة مؤقتة متّسقة</td></tr>
+    <tr><td>تغطية اختبارات الخادم</td><td>0%</td><td>مسارات حرجة: مصادقة، تقدّم، ذكاء</td></tr>
+    <tr><td>فقدان التقدّم عند تغيير الجهاز</td><td>فقدان كامل</td><td>لا يوجد (مزامنة بحساب)</td></tr>
+    <tr><td>أرقام معروضة بلا قياس</td><td>6 درجات مهارات + لوحة صدارة</td><td>صفر</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>11. ما هو سليم فعلًا (يُحافَظ عليه)</h2>
+<ul class="plain">
+  <li><b>طبقة نطاق نظيفة:</b> <code>AnswerGrader</code> دالة نقية مع 20 اختبارًا يغطي حالات حدّية حقيقية — هذا هو النمط الصحيح لبقية المنطق.</li>
+  <li><b>حَقن الاعتماديات اليدوي:</b> <code>AppContainer</code> + <code>MainViewModelFactory</code> أخرج البناء من الـViewModels وجعلها قابلة للاستبدال بمزيّفات.</li>
+  <li><b>تنقّل رسمي:</b> <code>NavHost</code> بمكدّس رجوع حقيقي ومسارات مُحدَّدة وحماية مسار الإدارة بـ<code>BuildConfig.DEBUG</code>.</li>
+  <li><b>الاستمرارية:</b> الثيم وسرعة الصوت في DataStore مع معالجة ملف تفضيلات تالف.</li>
+  <li><b>صدق تدريجي:</b> إزالة درجة النطق المزيّفة، وحذف إذن غير مستخدم، وتسمية لوحة الصدارة «محاكاة» صراحة.</li>
+  <li><b>إخفاء المفتاح:</b> مفتاح Gemini لم يعد داخل الحزمة؛ الوسيط يقرأه من بيئة الخادم مع سقف يومي لكل مستدعٍ.</li>
+  <li><b>البناء:</b> Kotlin DSL وكتالوج إصدارات مركزي، وثبيت لغة الـJVM لحلّ مشكلة أرقام Room على أنظمة عربية، وتصدير مخطط Room مع هجرة موثّقة.</li>
+</ul>
+
+<h2>12. مرجع سريع — أوامر مقترحة للتحقق</h2>
+<pre><code># الباك-إند
+cd backend
+npx tsc --noEmit                 # تحقق تصريف (نجح حاليًا)
+npx prisma migrate dev --name init   # المرحلة A: أول هجرة مُلتزَمة
+
+# تطبيق أندرويد
+./gradlew :app:testDebugUnitTest     # اختبارات الوحدة
+./gradlew :app:assembleDebug         # بناء سريع
+./gradlew :app:assembleRelease       # يتحقق من التصغير وقواعد ProGuard</code></pre>
+
+<footer>
+  أُعِدّ هذا التقرير بفحص شيفرة المستودع مع تحقّق تجريبي محدود (تصريف الباك-إند، وسلوك Express مع الدوال غير المتزامنة، ووجود هجرات قاعدة البيانات).
+  ما لم يُشغَّل فعليًا مُعلَّم بأنه قراءة شيفرة لا نتيجة اختبار.
+  <br />الملف المرافق: <code>docs/AUDIT.md</code> و<code>docs/AUDIT.html</code> (التدقيق السابق) — هذا الملف يُكمل عليه ويوسّعه ليشمل الخادم الجديد.
+</footer>
+
+</div>
+</body>
+</html>

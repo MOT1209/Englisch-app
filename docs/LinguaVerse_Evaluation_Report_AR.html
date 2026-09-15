@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تقرير تقييم شامل — تطبيق LinguaVerse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@page { size: 720px 1020px; margin: 0; }
+:root{
+  --cv-bg:#0a1628; --cv-accent:#4da8da; --cv-text:#e8f0f8; --cv-muted:#7a9bb8; --cv-glow:#2d7ab3;
+  --c-page:#f5f8fc; --c-section:#edf2f9; --c-card:#e4ecf5; --c-stripe:#eef3fa;
+  --c-head:#1a4a7a; --c-border:#c0d0e2; --c-accent:#2d7ab3;
+  --c-text:#142840; --c-muted:#5a7a96;
+}
+html,body{ margin:0; padding:0; width:720px; background:var(--c-page); color:var(--c-text);
+  font-family:'IBM Plex Sans Arabic','Cairo',sans-serif; font-size:14.5px; line-height:1.9;
+  line-break:strict; word-break:normal; overflow-wrap:break-word; }
+@media screen{
+  html{ height:auto; display:flex; justify-content:center; background:#1c2733; }
+  body{ transform-origin:top center; margin:20px auto; box-shadow:0 0 60px rgba(0,0,0,.35); }
+}
+p{ margin:0 0 12px; text-align:justify; }
+p,td,li{ line-break:strict; overflow-wrap:break-word; }
+.ltr{ direction:ltr; unicode-bidi:isolate; }
+strong{ font-weight:700; }
+/* ============ COVER ============ */
+.cover{ position:relative; width:720px; height:1020px;
+  background:
+    radial-gradient(circle 480px at 88% 6%, rgba(45,122,179,.18), rgba(45,122,179,0) 70%),
+    radial-gradient(circle 540px at 8% 95%, rgba(77,168,218,.12), rgba(77,168,218,0) 70%),
+    var(--cv-bg);
+  break-after:page; overflow:hidden; box-sizing:border-box; }
+.cover .frame{ position:absolute; top:80px; bottom:80px; left:60px; right:60px;
+  border:2px solid var(--cv-accent); z-index:2; }
+.cover .content{ position:absolute; inset:0; z-index:3; }
+.cv-kicker{ position:absolute; top:132px; right:104px; left:104px; color:var(--cv-accent);
+  font-size:12.5px; font-weight:600; letter-spacing:4px; text-align:right; }
+.cv-title{ position:absolute; top:210px; right:104px; left:104px; text-align:right;
+  font-family:'Cairo','IBM Plex Sans Arabic',sans-serif; font-weight:900; font-size:58px;
+  line-height:1.1; color:var(--cv-text); text-shadow:0 0 26px rgba(77,168,218,.35); }
+.cv-sub{ position:absolute; top:296px; right:104px; left:104px; text-align:right;
+  font-size:16px; color:var(--cv-text); opacity:.92; font-weight:600; }
+.cv-summary{ position:absolute; top:470px; right:104px; width:440px; text-align:right;
+  font-size:13.5px; line-height:1.95; color:var(--cv-muted); }
+.cv-org{ position:absolute; top:660px; right:104px; left:104px; text-align:right; }
+.cv-org .o1{ font-size:16px; font-weight:700; color:var(--cv-text); }
+.cv-org .o2{ font-size:12.5px; color:var(--cv-muted); margin-top:6px; }
+.cv-meta{ position:absolute; bottom:122px; right:104px; left:104px; display:flex;
+  justify-content:space-between; align-items:flex-end; color:var(--cv-muted);
+  font-size:11.5px; letter-spacing:1.5px; }
+.cv-meta .m-accent{ color:var(--cv-accent); font-weight:600; }
+/* ============ BODY ============ */
+.main-content{ padding:56px 58px 46px; }
+.chapter-header{ break-after:avoid; break-inside:avoid; margin-top:26px; }
+.chapter-header:first-child{ margin-top:0; }
+.section-tag{ display:inline-block; color:var(--c-accent); font-size:11px; font-weight:700;
+  letter-spacing:3px; border:1px solid var(--c-border); border-radius:3px; padding:2px 10px;
+  background:#ffffff; }
+.section-title{ font-family:'Cairo','IBM Plex Sans Arabic',sans-serif; font-weight:800;
+  font-size:23px; color:var(--c-head); margin:10px 0 4px; line-height:1.45; }
+.section-title::after{ content:''; display:block; width:64px; height:3px; background:var(--c-accent);
+  border-radius:2px; margin:6px 0 14px; }
+h3.sub{ font-family:'Cairo','IBM Plex Sans Arabic',sans-serif; font-weight:700; font-size:16.5px;
+  color:var(--c-head); margin:18px 0 8px; break-after:avoid; }
+/* cards */
+.card{ background:#ffffff; border:1px solid var(--c-border); border-right:4px solid var(--c-accent);
+  border-radius:8px; padding:14px 16px; margin-bottom:12px; break-inside:avoid; }
+.card .c-title{ font-weight:700; color:var(--c-head); font-size:14.5px; margin-bottom:4px; }
+.card p:last-child{ margin-bottom:0; }
+.callout{ background:var(--c-section); border:1px solid var(--c-border); border-right:4px solid #b3542d;
+  border-radius:8px; padding:13px 16px; margin:12px 0 14px; break-inside:avoid; font-size:13.5px; }
+.callout.ok{ border-right-color:var(--c-accent); }
+.callout .t{ font-weight:700; color:var(--c-head); }
+/* stat cards */
+.stat-grid{ display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 16px; max-width:100%; }
+.stat{ flex:1 1 46%; min-width:150px; max-width:100%; background:var(--c-card);
+  border:1px solid var(--c-border); border-radius:10px; padding:12px 14px; break-inside:avoid;
+  box-sizing:border-box; }
+.stat .num{ font-family:'Cairo',sans-serif; font-weight:900; font-size:26px; color:var(--c-head); line-height:1.2; }
+.stat .lbl{ font-size:12px; color:var(--c-muted); margin-top:2px; line-height:1.6; }
+/* lists */
+ul.list{ margin:6px 0 14px; padding:0 18px 0 0; }
+ul.list li{ margin-bottom:7px; text-align:right; break-inside:avoid; }
+ul.list li::marker{ color:var(--c-accent); }
+ol.steps{ margin:6px 0 14px; padding:0 20px 0 0; }
+ol.steps li{ margin-bottom:10px; text-align:right; break-inside:avoid; padding-right:4px; }
+ol.steps li::marker{ color:var(--c-accent); font-weight:700; }
+/* tables */
+table{ width:100%; border-collapse:collapse; margin:12px 0 16px; font-size:12.5px;
+  table-layout:fixed; }
+table.keep{ break-inside:avoid; }
+thead{ display:table-header-group; }
+tr{ break-inside:avoid; }
+th{ background:var(--c-head); color:#ffffff; font-weight:700; padding:8px 10px;
+  text-align:right; border:1px solid var(--c-head); font-size:12.5px; }
+td{ padding:7px 10px; border:1px solid var(--c-border); text-align:right;
+  vertical-align:top; background:#ffffff; }
+tbody tr:nth-child(odd) td{ background:var(--c-stripe); }
+td .sev{ display:inline-block; font-size:10.5px; font-weight:700; border-radius:3px;
+  padding:1px 8px; margin-left:6px; }
+.sev.hi{ background:#f7e4dc; color:#8a3828; border:1px solid #e0c0b0; }
+.sev.mid{ background:#f2ead8; color:#7a5a18; border:1px solid #e0d0a8; }
+.sev.lo{ background:#e2ecef; color:#3a5a68; border:1px solid #c0d4da; }
+/* toc grid */
+.toc-grid{ display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 8px; max-width:100%; }
+.toc-item{ flex:1 1 46%; min-width:240px; max-width:100%; box-sizing:border-box;
+  background:#ffffff; border:1px solid var(--c-border); border-radius:7px;
+  padding:9px 12px; font-size:12.5px; color:var(--c-text); break-inside:avoid;
+  display:flex; gap:8px; align-items:baseline; }
+.toc-item .n{ color:var(--c-accent); font-weight:800; font-family:'Cairo',sans-serif; }
+/* chart */
+.chart-box{ background:#ffffff; border:1px solid var(--c-border); border-radius:10px;
+  padding:16px 18px 12px; margin:14px 0 6px; break-inside:avoid; }
+.chart-title{ font-family:'Cairo',sans-serif; font-weight:700; font-size:14px; color:var(--c-head); }
+.chart-sub{ font-size:11.5px; color:var(--c-muted); margin-bottom:12px; }
+.legend{ display:flex; flex-wrap:wrap; gap:18px; font-size:11.5px; color:var(--c-muted);
+  margin-bottom:12px; }
+.legend .dot{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-left:6px; vertical-align:middle; }
+.bar-row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; max-width:100%; }
+.bar-label{ width:96px; flex-shrink:0; font-size:12px; font-weight:600; color:var(--c-text); }
+.bar-track{ flex:1 1 auto; min-width:0; }
+.bar-fill{ height:24px; border-radius:3px; }
+.bar-val{ width:86px; flex-shrink:0; font-size:12px; font-weight:700; color:var(--c-head);
+  font-family:'Cairo',sans-serif; }
+.chart-note{ font-size:11px; color:var(--c-muted); margin-top:8px; border-top:1px dashed var(--c-border); padding-top:8px; }
+/* ending */
+.ending{ position:relative; width:720px; height:1020px;
+  background:
+    radial-gradient(circle 500px at 88% 8%, rgba(45,122,179,.16), rgba(45,122,179,0) 70%),
+    radial-gradient(circle 540px at 8% 92%, rgba(77,168,218,.12), rgba(77,168,218,0) 70%),
+    var(--cv-bg);
+  break-before:page; overflow:hidden; box-sizing:border-box; }
+.ending .inner{ position:absolute; top:0; bottom:0; right:90px; left:90px;
+  display:flex; flex-direction:column; justify-content:center; align-items:flex-end; text-align:right; }
+.ending .big{ font-family:'Cairo',sans-serif; font-weight:900; font-size:34px; line-height:1.5;
+  color:var(--cv-text); }
+.ending .big::after{ content:''; display:block; width:70px; height:3px; background:var(--cv-accent);
+  border-radius:2px; margin:26px 0; }
+.ending .small{ font-size:13.5px; color:var(--cv-muted); line-height:2; }
+.ending .foot{ position:absolute; bottom:110px; right:90px; left:90px; display:flex;
+  justify-content:space-between; font-size:11px; color:var(--cv-muted); letter-spacing:1.5px; }
+</style>
+</head>
+<body>
+<!-- ================= COVER ================= -->
+<div class="cover">
+  
+  <div class="frame"></div>
+  <div class="content">
+    <div class="cv-kicker">تقرير تقييم شامل &middot; تحليل تقني وتجاري وخطة ربح</div>
+    <div class="cv-title ltr" dir="ltr" style="text-align:right;">LinguaVerse</div>
+    <div class="cv-sub">تطبيق تعلّم اللغات بالذكاء الاصطناعي &mdash; Android &middot; Kotlin &middot; Gemini</div>
+    <div class="cv-summary">تقييم هندسي وتجاري كامل للمستودع <span class="ltr">MOT1209/Englisch-app</span> بناءً على قراءة الكود المصدري سطرًا بسطر (5,345 سطر Kotlin عبر 30 ملفًا) وسجل الالتزامات وتقرير التدقيق المرفق: الطريقة المعمارية الحالية، والحكم النهائي بين نموذج SaaS والتطبيق المستقل القابل للنشر على Google Play، ونقاط الضعف مرتبةً بالأولوية، وخطة ربح بميزانية شبه صفرية، وخارطة طريق تنفيذية لستة أشهر.</div>
+    <div class="cv-org">
+      <div class="o1">تقرير موجه لصاحب المشروع والمطوّر</div>
+      <div class="o2">مبني على التحليل المباشر لشفرة المستودع وبيانات السوق المحدّثة لعام 2026</div>
+    </div>
+    <div class="cv-meta">
+      <span><span class="m-accent">الإصدار</span> 1.0</span>
+      <span><span class="m-accent">التاريخ</span> 30 أغسطس 2026</span>
+      <span><span class="m-accent">التصنيف</span> تحليل هندسي وتجاري</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MAIN CONTENT ================= -->
+<div class="main-content">
+
+<!-- ============ الملخص التنفيذي ============ -->
+<div class="chapter-header">
+  <span class="section-tag">الملخص التنفيذي</span>
+  <div class="section-title">الجواب المباشر: مستقل وليس SaaS &mdash; وقابل للنشر بعد إصلاحات محددة</div>
+  
+</div>
+
+<p>خضع المستودع لقراءة كاملة تشمل كل ملفات <span class="ltr">Kotlin</span> الثلاثين (5,345 سطرًا)، وملفات البناء (<span class="ltr">build.gradle.kts</span> وكتالوج الإصدارات)، وبيان الأذونات، وتقرير التدقيق الداخلي الموثق في <span class="ltr">docs/AUDIT.md</span>، وسجل الالتزامات الذي يُظهر تنفيذ المراحل من 0 إلى 5 من خارطة التدقيق إضافة إلى بدايتَي المرحلة 7. الاستنتاج المركزي واضح ومباشر: <strong>التطبيق في صيغته الحالية تطبيق مستقل محلي بالكامل</strong> يعمل دون أي خادم خاص بك، ببيانات محفوظة محليًا عبر <span class="ltr">Room</span> وبلا حسابات مستخدمين ولا فواتير، مع اعتماد سحابي وحيد هو استدعاء مباشر لواجهة <span class="ltr">Gemini</span> من جهاز المستخدم.</p>
+
+<div class="callout ok"><span class="t">الحكم النهائي:</span> لا يستوفي التطبيق أيًّا من أركان نموذج SaaS (لا خلفية متعددة المستأجرين، لا حسابات، لا اشتراكات، لا خدمة مستمرة). إنه <strong>تطبيق Android مستقل قابل للنشر على Google Play</strong> بمسار عمل يتراوح بين 4 و6 أسابيع من التطوير الفردي المنضبط، ويمكن أن يتطور لاحقًا إلى هجين ثم SaaS عبر Firebase متى أثبت المنتج جذبًا حقيقيًا.</div>
+
+<div class="stat-grid">
+  <div class="stat"><div class="num">5.8 / 10</div><div class="lbl">درجة جاهزية النشر التجاري على Google Play (بعد إصلاحات الحرجة تصل إلى 8+)</div></div>
+  <div class="stat"><div class="num">5,345</div><div class="lbl">سطر Kotlin في 30 ملفًا — قاعدة كود صغيرة قابلة للإدارة بمطور واحد</div></div>
+  <div class="stat"><div class="num">12 / 1</div><div class="lbl">لغة معلَنة في الواجهة مقابل لغة واحدة فقط ذات محتوى تعليمي حقيقي</div></div>
+  <div class="stat"><div class="num">25 دولار</div><div class="lbl">إجمالي تكلفة الدخول إلى Google Play (رسوم لمرة واحدة) + أصول تقنية مجانية</div></div>
+</div>
+
+<h3 class="sub">موجز سريع: ما هو جاهز وما هو ناقص</h3>
+<table class="keep">
+  <colgroup><col style="width:50%"><col style="width:50%"></colgroup>
+  <thead><tr><th>متوفر فعليًا ويعمل</th><th>ناقص أو خطر يجب معالجته قبل النشر</th></tr></thead>
+  <tbody>
+    <tr><td>بنية Compose حديثة وتنقّل حقيقي بمكدّس رجوع (المرحلة 4 منفذة)</td><td>مفتاح Gemini محزوم داخل APK وقابل للاستخراج (الخلل الأمني الأبرز C5)</td></tr>
+    <tr><td>طبقة بيانات Room سليمة: هجرة موثقة، 8 فهارس، بذور لمرة واحدة</td><td>محتوى تعليمي حقيقي للغة واحدة (إسبانية، 6 دروس) مقابل 12 لغة معروضة</td></tr>
+    <tr><td>معلم ذكاء اصطناعي وتقييم كتابة عبر gemini-2.5-flash مع معالجة أخطاء صريحة</td><td>عناصر واجهة وهمية: شهادة CEFR غير موجودة، درجات مهارات لا تُحدَّث، صدارة اصطناعية</td></tr>
+    <tr><td>حماية لوحة الإدارة خلف نسخة Debug فقط، وحذف إذن الميكروفون غير المستخدم</td><td>تدويل وRTL غير مكتملَين رغم <span class="ltr">supportsRtl="true"</span> (استُخرج نحو 40 سلسلة من مئات)</td></tr>
+    <tr><td>تفضيلات مستخدم محفوظة عبر DataStore واختبارات لمنطق التصحيح</td><td>لا حقن اعتماديات، ViewModel وحيد لكل التطبيق، تصغير Release معطَّل</td></tr>
+  </tbody>
+</table>
+
+<h3 class="sub">محتويات التقرير</h3>
+<div class="toc-grid">
+  <div class="toc-item"><span class="n">1</span><span>التشريح المعماري للتطبيق — مستوى محترف</span></div>
+  <div class="toc-item"><span class="n">2</span><span>الحكم النهائي: SaaS أم تطبيق مستقل؟</span></div>
+  <div class="toc-item"><span class="n">3</span><span>نقاط القوة ونقاط الضعف الصريحة</span></div>
+  <div class="toc-item"><span class="n">4</span><span>خطة الإصلاح والتحضير للنشر</span></div>
+  <div class="toc-item"><span class="n">5</span><span>نموذج الربح بميزانية شبه صفرية</span></div>
+  <div class="toc-item"><span class="n">6</span><span>خارطة طريق 6 أشهر + قائمة أول 30 يومًا</span></div>
+</div>
+<!-- ============ القسم 1: التشريح المعماري ============ -->
+<div class="chapter-header">
+  <span class="section-tag">القسم 1</span>
+  <div class="section-title">التشريح المعماري للتطبيق — مستوى محترف</div>
+  
+</div>
+
+<p>يبني التطبيق على حزمة أندرويد حديثة بالكامل: <span class="ltr">Kotlin</span> مع <span class="ltr">Jetpack Compose</span> و<span class="ltr">Material 3</span> للواجهات، و<span class="ltr">Room</span> لقاعدة البيانات المحلية مع <span class="ltr">KSP</span> للتوليد، و<span class="ltr">DataStore Preferences</span> لحفظ التفضيلات، و<span class="ltr">Retrofit + OkHttp + Moshi</span> للاتصال بالشبكة، ومكوّن <span class="ltr">TextToSpeech</span> للنطق. إعدادات البناء صحيحة استراتيجيًا: <span class="ltr">minSdk 24</span> يغطي نحو 98% من الأجهزة النشطة، و<span class="ltr">targetSdk 36</span> يستوفي مسبقًا شرط Google Play المفروض اعتبارًا من 31 أغسطس 2026 (استهداف Android 16/API 36 لتطبيقات جديدة أو محدّثة)، وكتالوج الإصدارات <span class="ltr">libs.versions.toml</span> مركزي ومنظّم بما يسهّل ترقية الاعتماديات لاحقًا.</p>
+
+<p>الطبقات واضحة الملامح رغم غياب الحقن: طبقة بيانات (<span class="ltr">data/db</span> و<span class="ltr">data/model</span> و<span class="ltr">data/prefs</span> و<span class="ltr">data/repository</span>)، وطبقة نطاق ناشئة تحوي مصحّح الإجابات <span class="ltr">AnswerGrader</span> المنطقي النقي المُختبَر بوحدة مستقلة (105 أسطر اختبار)، وطبقة ذكاء اصطناعي معزولة في <span class="ltr">ai/</span>، وطبقة صوت في <span class="ltr">audio/</span>، وطبقة واجهة <span class="ltr">ui/</span> بتسع شاشات ومكوّنات مشتركة. النمط المعماري هو MVVM بـViewModel وحيد يجمع كل الحالات.</p>
+
+<h3 class="sub">طبقة البيانات: الأصل الأقوى في المشروع</h3>
+<p>قاعدة البيانات تضم 9 كيانات (اللغات، الملف الشخصي، الدروس، التمارين، المفردات، قواعد القواعد، البطاقات، الإنجازات، رسائل المحادثة) ووصلت إلى الإصدار الثاني بهجرة موثقة <span class="ltr">MIGRATION_1_2</span> أضافت ثمانية فهارس تغطي كل استعلامات التصفية الرئيسية (الدرس حسب اللغة وترتيبه، التمارين حسب معرّف الدرس، المفردات حسب اللغة والمفضلة). خيار <span class="ltr">exportSchema=true</span> مع تصدير المخطط إلى <span class="ltr">app/schemas/</span> يجعل أي هجرة قادمة قابلة للمراجعة والاختبار، وإزالة <span class="ltr">fallbackToDestructiveMigration</span> تعني أن بيانات المستخدم لم تعد عرضة للمحو الصامت عند أي تعديل للمخطط. كذلك صُحّح خلل جوهري كان يمحو تقدم المتعلم عند كل إقلاع: بذور المحتوى أصبحت محمية بفحص <span class="ltr">count==0</span> فتعمل مرة واحدة فقط، ومنطق مكافآت إتمام الدرس يمنع تكرار جمع الـXP عند إعادة الدرس.</p>
+
+<h3 class="sub">تكامل الذكاء الاصطناعي: نافذة المنتج الحقيقية ونقطة هشاشتها</h3>
+<p>خدمة <span class="ltr">GeminiTutorService</span> تستدعي <span class="ltr">gemini-2.5-flash</span> مباشرة من الجهاز عبر Retrofit بميزتين تعليميتين: محادثة مع معلم ذكي تُعيد بنية مفككة (رد + تصحيح + اقتراح أفضل + شرح قواعدي) وتقييم كتابة بدرجة وملاحظات. معالجة الأخطاء صريحة عبر نوع <span class="ltr">AiOutcome</span> الذي يميّز بين «غير مهيأ» و«استجابة فارغة» و«تعذر الوصول» — وهي إصلاحٌ مهم لخلل سابق كان يزيّف ردًا جاهزًا عند أي فشل. لكن هشاشة النموذج في موضعين: أولًا، المفتاح يُقرأ من <span class="ltr">BuildConfig</span> المولّد من ملف <span class="ltr">.env</span> ويُحزم داخل الـAPK ويُرسل كمعامل في الرابط (<span class="ltr">?key=</span>)، أي أن أي شخص يفكك الحزمة يستخرجه خلال دقائق ويستهلك حصتك. ثانيًا، حدود الطبقة المجانية لـGemini قُلّصت بشكل ملحوظ خلال 2025 و2026 (تقارير متعددة تشير إلى خفض درامي للحصة اليومية على نماذج Flash)، ما يعني أن أي خطة تجارية يجب ألا تعتمد على «ذكاء اصطناعي مجاني بلا سقف»، وأن تصميم سقوف يومية لكل مستخدم ليس رفاهية بل شرط بقاء تشغيلي.</p>
+
+<h3 class="sub">الواجهة والتنقل: قفزة نوعية منفّذة وبقايا مرحلة قادمة</h3>
+<p>التنقل اليوم حقيقي عبر <span class="ltr">navigation-compose</span> بـ<code class="ltr">NavHost</code> ومسارات معلنة (<span class="ltr">lesson/{lessonId}</span> و<span class="ltr">skill_detail/{skillType}</span>) مع سلوك تبويبات قياسي يحفظ الحالة ويعيد الرجوع للبداية، وحالات تحميل صريحة في شاشة الدرس، ومعالجة آمنة للمسارات غير المعروفة. ومع ذلك تبقى ديون معمارية مؤكدة: شريط تنقّل بستة عناصر يخالف توصية Material 3 (3 إلى 5)، و<span class="ltr">MainViewModel</span> وحيد بـ351 سطرًا يبني قاعدة البيانات والمستودع ومدير الصوت بنفسه ويحمل نحو 20 تدفقًا للولاية، بلا حقن اعتماديات ولا واجهات تسمح بالمحاكاة في الاختبار (هذا متن المرحلة 6 غير المنفذة). كذلك يُعلن <span class="ltr">supportsRtl="true"</span> بينما استخراج السلاسل إلى <span class="ltr">strings.xml</span> بدأ للتو بنحو 40 مُدخلًا من مئات النصوص المرصودة، وبعض الشاشات تحوي نصوصًا إسبانية مثبتة حرفيًا في الكود، ما يجعل دعم العربية الفعلي — والاتجاه من اليمين لليسار — غير مكتمل بعد.</p>
+
+<!-- ============ القسم 2: SaaS أم مستقل ============ -->
+<div class="chapter-header">
+  <span class="section-tag">القسم 2</span>
+  <div class="section-title">الحكم النهائي: SaaS أم تطبيق مستقل قابل للنشر؟</div>
+  
+</div>
+
+<p>قبل الحكم، لنتفق على المعايير. نموذج <strong>SaaS</strong> (Software as a Service) يقوم على أربعة أركان تقنية: خلفية مستضافة تدير المنطق والبيانات، وبنية متعددة المستأجرين تخدم مستخدمين متزامنين بعزل عن بعضهم، وحسابات وهويات يدفع أصحابها مقابل خدمة مستمرة (اشتراك شهري/سنوي أو استخدام)، وتحديثات وميزات تُشحن على الخادم فتصل الجميع فورًا دون إعادة تثبيت. أما <strong>التطبيق المستقل</strong> فهو حزمة تُوزَّع مرة واحدة (APK/AAB)، تحمل بياناتها ومنطقها على الجهاز، تعمل دون خادم خاص، ولا تُقاس قيمتها بـ«خدمة جارية» بل بـ«منتج مثبَّت». التطبيق الحالي يقع بوضوح تام في الفئة الثانية: قاعدة البيانات محلية، الملف الشخصي محلي بلا تسجيل دخول، المحتوى مضمّن في الحزمة، وكل عنصر تشغيلي يحدث على الجهاز. الاعتماد السحابي الوحيد — استدعاء Gemini المباشر — لا يحوّله إلى SaaS، إذ إنه يستهلك خدمة طرف ثالث من العميل مباشرة ولا يوجد أي «خدمة تشغّلها أنت» بين الاثنين.</p>
+
+<table>
+  <colgroup><col style="width:22%"><col style="width:39%"><col style="width:39%"></colgroup>
+  <thead><tr><th>المعيار</th><th>التطبيق الحالي (المستقل)</th><th>لو صار SaaS كاملًا</th></tr></thead>
+  <tbody>
+    <tr><td>البيانات</td><td>محلية بالكامل عبر Room على الجهاز</td><td>سحابية متزامنة عبر Firestore/Postgres مع مزامنة بين الأجهزة</td></tr>
+    <tr><td>الحسابات</td><td>لا تسجيل دخول؛ ملف افتراضي واحد</td><td>تسجيل عبر Google/بريد مع هوية لكل مستخدم</td></tr>
+    <tr><td>الذكاء الاصطناعي</td><td>استدعاء مباشر من العميل بمفتاح محزوم (خطر)</td><td>وكيل خادمي يخفي المفتاح ويفرض سقوفًا وتحليلات</td></tr>
+    <tr><td>المحتوى</td><td>مضمّن في الحزمة؛ التحديث يتطلب إصدارًا جديدًا</td><td>يُدار من لوحة ويب ويصل المستخدمين فورًا</td></tr>
+    <tr><td>الفواتير</td><td>لا يوجد</td><td>اشتراكات عبر Play Billing أو Stripe مع صلاحيات مميزة</td></tr>
+    <tr><td>التكلفة التشغيلية</td><td>صفر تقريبًا (رسوم Play فقط)</td><td>تتصاعد مع الاستخدام (Firebase/خادم/قاعدة بيانات)</td></tr>
+    <tr><td>الخصوصية والامتثال</td><td>الأسهل إطلاقًا: نموذج Data Safety شبه فارغ</td><td>التزامات GDPR/خصوصية أكبر مع البيانات السحابية</td></tr>
+    <tr><td>قابلية التوسع</td><td>محدودة بمحتوى الحزمة وجهاز المستخدم</td><td>مسارات نمو أوسع (ويب، مدارس، فريق، مزامنة)</td></tr>
+  </tbody>
+</table>
+
+<h3 class="sub">فهل هو قابل للنشر على Google Play اليوم؟</h3>
+<p>تقنيًا، البنية كاملة الأهلية: التطبيق يستهدف API 36 (شرط 2026) وبيانه المحلي يجعل نموذج <span class="ltr">Data Safety</span> أسهل إجابة ممكنة (لا تجمع بيانات ولا تشاركها)، ورسوم الحساب 25 دولار لمرة واحدة، والحزمة تُبنى AAB موقّعة. لكن «قابل للنشر تقنيًا» يختلف عن «يصلح للنشر تجاريًا»: أربعة عوائق تحجب الإطلاق الفعلي وهي كالآتي بالترتيب: أمن مفتاح Gemini (خطر مالي مباشر عليك بمجرد أول قارف للمفتاح)، وادعاءات واجهة لا وجود لأصولها (شهادة CEFR ودرجات مهارات ثابتة) وهي مساحة رفض مباشرة بموجب سياسة «الادعاءات المضللة»، وفجوة المحتوى (12 لغة معروضة مقابل 6 دروس إسبانية)، وعدم اكتمال العربية/RTL إذا كان السوق المستهدف عربيًا. كلها عوائق قابلة للمعالجة ضمن 4–6 أسابيع عمل فردي منضبط كما سيفصّل القسم 4.</p>
+
+<div class="callout ok"><span class="t">مسار التطور الموصى به:</span> <strong>المرحلة أ</strong> — انشره مستقلًا (Freemium عبر AdMob) لاختبار الاحتفاظ بالمتعلّمين بأقل تكلفة ممكنة. <strong>المرحلة ب</strong> — الهجين: أضف Firebase Auth + مزامنة Firestore + Remote Config + وكيل AI عبر Firebase AI Logic مع App Check (خطة Spark المجانية تكفي لآلاف المستخدمين). <strong>المرحلة ج</strong> — SaaS فعلي فقط عند ظهور طلب يدفع مقابل خدمة متعددة الأجهزة أو مؤسسية (مدارس/معاهد بمستأجرين متعددين). القاعدة الذهبية: لا تشتري تعقيد SaaS قبل أن يدفع السوق ثمنه.</div>
+<!-- ============ القسم 3: القوة والضعف ============ -->
+<div class="chapter-header">
+  <span class="section-tag">القسم 3</span>
+  <div class="section-title">نقاط القوة ونقاط الضعف الصريحة</div>
+  
+</div>
+
+<h3 class="sub">أولاً: ما يستحق أن تُبنى عليه (نقاط القوة)</h3>
+<ul class="list">
+  <li><strong>حزمة تقنية حديثة بصيانة سهلة:</strong> Compose + Room + DataStore + كتالوج إصدارات مركزي يعني أن تطوير الميزات المستقبلية سيكون أسرع وأقل كلفة مما هو على حزم قديمة، وأن رحلة تعلّم المشروع لأي مطوّر مساعد قصيرة.</li>
+  <li><strong>انضباط هندسي نادر في مشاريع الأفراد:</strong> وجود تقرير تدقيق موثق بـ28 خللًا مرقّمًا، وخارطة تنفيذ بتسع مراحل، وسجل التزامات يُظهر تنفيذ المراحل 0–5 و7أ/7ب تباعًا كل منها في commit مستقل — هذه ثقافة إصلاح تراكمي «لا إعادة كتابة من الصفر» تحمي المنتج من الانحدار.</li>
+  <li><strong>أنماط بيانات سليمة:</strong> كيانات غير قابلة للتغيير مع <span class="ltr">copy()</span>، وربط Room بالواجهة عبر <span class="ltr">Flow + stateIn(WhileSubscribed(5000))</span>، وهجرات بلا تدمير، وبذور لمرة واحدة — أي أن تقدم المتعلم باتّ آمنة افتراضيًا.</li>
+  <li><strong>صدق استثماري في التعامل مع الأخطاء:</strong> نوع <span class="ltr">AiOutcome</span> الصريح، وحذف درجة النطق المزيّفة والإذن غير المستخدم، وحماية لوحة الإدارة خلف <span class="ltr">BuildConfig.DEBUG</span>، واختبارات وحدة لمصحح الإجابات — قرارات تصحح مخاطر سياسات Play قبل أن تتحول إلى رفض نشر.</li>
+</ul>
+
+<h3 class="sub">ثانيًا: ما يعيق النشر والربح (نقاط الضعف مرتبة بالأولوية)</h3>
+
+<div class="card"><div class="c-title">W1 — مفتاح Gemini محزوم داخل الـAPK <span class="sev hi">حرج</span></div>
+<p>المفتاح يُولّد داخل <span class="ltr">BuildConfig</span> ويُرسل كمعامل رابط. الاستخراج بأدوات مجانية يستغرق دقائق، والنتيجة: استهلاك حصتك (المجانية ثم المدفوعة) من طرف ثالث، وفاتورة مفاجئة عند تفعيل الفوترة. هذا الخلل الوحيد الذي لا يُحل بتعديل كود التطبيق وحده؛ يحتاج وكيلًا خادميًا أو Firebase AI Logic مع App Check. أي نشر قبل إغلاقه يعني تمويل مستخدمين مجهولين بأموالك.</p></div>
+
+<div class="card"><div class="c-title">W2 — فجوة المحتوى: 12 لغة معروضة، لغة واحدة قابلة للتعلم <span class="sev hi">عالٍ</span></div>
+<p>قاعدة البيانات تزرع دروسًا للإسبانية فقط (6 دروس تمتد من A1 إلى B2)، بينما تختار الواجهة من 12 لغة بشعاراتها وأوصافها، فتظهر شاشات فارغة لمن يختار العربية أو الألمانية أو اليابانية. هذا خسارة احتفاظ مباشرة (المستخدم يُحاكم التطبيق من أول 60 ثانية) ومساحة رفض بمبدأ «الوظائف المعلنة يجب أن تعمل». القاعدة العملية: تُعلن اللغة عند توفر 10 دروس قابلة للعب على الأقل.</p></div>
+
+<div class="card"><div class="c-title">W3 — بقايا واجهة وهمية تخالف سياسات Play وتكسر الثقة <span class="sev hi">عالٍ</span></div>
+<p>ثلاث بقايا واضحة بعد إصلاح درجة النطق: بطاقة «شهادة CEFR جاهزة» مع زر «عرض الشهادة الرسمية» دون أي منطق شهادات في الشيفرة، ودرجات مهارات الملف الشخصي (تحدث/قواعد) قيم ابتدائية لا يحدّثها أي مسار برمجي، وشريط الصدارة بمتسابقين اصطناعيين دون تمييز صريح، إضافة إلى مفتاح «حزم عدم الاتصال» في الإعدادات حالة واجهة فقط لا يعمل شيئًا. سياسات Google Play تعتبرها ادعاءات مضللة، والمستخدم يعتبرها وعدًا مكسورًا يُنهي الثقة في باقي المنتج.</p></div>
+
+<div class="card"><div class="c-title">W4 — العربية وRTL غير مكتملتين رغم إعلانهما <span class="sev hi">عالٍ (للسوق العربي)</span></div>
+<p><span class="ltr">supportsRtl="true"</span> معلن، لكن مئات النصوص مثبتة إنجليزيًا داخل الكود، وبدأ استخراجها للتو، ونصوص إسبانية مثبتة حرفيًا في شاشات المهارات، والأيقونات الاتجاهية لم تُحول إلى نسخ AutoMirrored. لو كان السوق المستهدف عربيًا فهذه هي العقبة التجارية الأولى بعد الأمن؛ تجربة RTL نصف منفذة أضرّ بالانطباع الأول أكثر من تأجيل الإطلاق أسبوعين.</p></div>
+
+<div class="card"><div class="c-title">W5 — ديون معمارية: ViewModel إله وحقن مفقود <span class="sev mid">متوسط</span></div>
+<p><span class="ltr">MainViewModel</span> (351 سطرًا) يجمع 20 تدفقًا ويبني تبعياته بنفسه بلا واجهات، فلا يمكن اختباره وحدةً ولا محاكاة فشل الشبكة. لا يمنع النشر، لكنه يبطئ كل ميزة قادمة ويرفع كلفة الديون عند نمو الفريق. علاجه مخطط أصلًا في المرحلة 6 (حقن يدوي أو Hilt + واجهات للمستودع وخدمة الذكاء + ViewModel لكل شاشة).</p></div>
+
+<div class="card"><div class="c-title">W6 — إعدادات الإصدار غير مُصلَّبة <span class="sev mid">متوسط</span></div>
+<p>التصغير والتعتيم معطّلان (<span class="ltr">isMinifyEnabled=false</span>)، وMoshi بلا <span class="ltr">KotlinJsonAdapterFactory</span> ولا قواعد ProGuard للانعكاس، واعتماديات غير مستخدمة تُثقل الحزمة (<span class="ltr">firebase-ai</span> معلنة دون استخدام فعلي، <span class="ltr">coil</span>، <span class="ltr">material-icons-extended</span> الضخمة، <span class="ltr">logging-interceptor</span>)، و<span class="ltr">namespace="com.example"</span> يبقى غير احترافي في كل أثر تصحيح. معالجتها هي متن المرحلة 8 بالضبط.</p></div>
+
+<div class="card"><div class="c-title">W7 — تقلب الحصة المجانية لـGemini <span class="sev mid">متوسط</span></div>
+<p>الحدود المجانية للـAPI خُفّضت خلال 2025 و2026 على نماذج Flash بدرجات متفاوتة وفق تقارير مطوّرين متعددة، وقد تظل تتغير. خطة العمل الآمنة: سقف يومي لكل مستخدم من الواجهة الخلفية عند التحول للهجين، وتصميم الميزات بحيث يظل التطبيق مفيدًا كاملًا بلا ذكاء اصطناعي، مع اعتبار الذكاء ميزة مميزة مدفوعة لا أساس المنتج المجاني.</p></div>
+
+<div class="card"><div class="c-title">W8 — بنية اختبار رقيقة <span class="sev lo">منخفض</span></div>
+<p>الاختبارات الحالية تغطي مصحح الإجابات فقط، ولا اختبارات واجهة رغم توفر <span class="ltr">testTag</span> على معظم العناصر (أساس جاهز). ليست عائقًا للنشر، لكن أي إصلاح مستقبلي بلا شبكة اختبار يعني انحدارًا محتملًا غير مرئي.</p></div>
+<!-- ============ القسم 4: خطة الإصلاح ============ -->
+<div class="chapter-header">
+  <span class="section-tag">القسم 4</span>
+  <div class="section-title">خطة الإصلاح والتحضير للنشر — 4–6 أسابيع عمل فردي</div>
+  
+</div>
+
+<p>الخطة التالية تُكمل ما تبقى من خارطة التدقيق (المراحل 6–8) وتضيف ما لم تكن خارطة التدقيق مسؤولة عنه تجاريًا: الأمن، وصدق الواجهة، وأصول النشر. الترتيب مقصود: الأمان أولًا لأنه يحدد إن كانت النسخة صالحة للاختبار مع أشخاص حقيقيين أصلًا، ثم صدق الواجهة لأنه شرط سياسات، ثم التدويل لأنه شرط سوق، ثم التصلب التقني.</p>
+
+<ol class="steps">
+  <li><strong>الأسبوع 1–2: إغلاق الأمن (W1) بأحد حلّين مجانيين.</strong> الحل المفضل: <span class="ltr">Firebase AI Logic</span> مع App Check وReCaptcha Enterprise — يستبدل استدعاء Retrofit المباشر دون كتابة أي خادم، يخفي المفتاح نهائيًا، ويعمل مع خطة Spark المجانية؛ ويستفيد من اعتمادية <span class="ltr">firebase-ai</span> المعلنة أصلًا دون استخدام. الحل البديل (تحكم أكبر): <span class="ltr">Cloud Functions</span> كوكيل يقرأ المفتاح من متغيرات بيئة خادمية، ويفرض سقوفًا يومية لكل مستخدم ويجمع بيانات استخدام. في الحالين: ألغِ/قيّد المفتاح الحالي في Google AI Studio فورًا (قيود API + سقف إنفاق) لأنه اعتُبر مكشوفًا منذ أول بناء شُيّر.</li>
+  <li><strong>الأسبوع 2–3: صدق الواجهة (W2+W3).</strong> احذف بطاقة شهادة CEFR وزرها حتى تُبنى ميزة حقيقية، واربط درجات المهارات إما بحساب فعلي من أداء التمارين (الأفضل: نسبة إجابات صحيحة آخر 20 تمرينًا لكل نوع) أو أخفها كليًا، ووسّم صفوف الصدارة الاصطناعية بوضوح («متحدٍّ افتراضي») أو اجعل الصدارة اجتماعية لاحقًا عند وجود حسابات، واحذف مفتاح «حزم عدم الاتصال» المزيف أو نفّذه فعليًا، وخصّص قائمة اللغات المعروضة لما لديك محتوى حقيقي له (الإسبانية الآن، ثم الألمانية والإنجليزية مع توليد المحتوى كما في القسم 6).</li>
+  <li><strong>الأسبوع 3–4: التدويل والعربية (W4) — استكمال المرحلة 7ب.</strong> استكمل استخراج كل السلاسل إلى <span class="ltr">strings.xml</span> وافتح مجلدات <span class="ltr">values-ar</span> و<span class="ltr">values-de</span>، وحوّل الأيقونات الاتجاهية إلى AutoMirrored، واختبر كل شاشة في وضع عربي RTL فعليًا على جهاز حقيقي (قائمة الدروس، شريط التقدم، أزرار الرجوع، الجداول). إن كان سوقك الأول عربيًا فاجعل هذه الخطوة قبل أي شيء تجاري آخر.</li>
+  <li><strong>الأسبوع 4–5: المرحلة 6 (المعمارية).</strong> حقن اعتماديات يدوي بسيط (أو Hilt إن كنت تفضّل المكتبة القياسية)، وواجهات <span class="ltr">LinguaVerseRepository</span> وخدمة الذكاء مع تنفيذات وهمية للاختبار، وتفكيك الـViewModel الكبير إلى ViewModels لكل شاشة (Home، Lessons، Chat، Profile). هذا استثمار مباشر في سرعة كل ما بعده.</li>
+  <li><strong>الأسبوع 5–6: المرحلة 8 (تصلب الإصدار).</strong> فعّل التصغير مع قواعد ProGuard للـMoshi وRetrofit، وأضف <span class="ltr">KotlinJsonAdapterFactory</span> أو اعتمد codegen، واحذف الاعتماديات غير المستخدمة، وأعد تسمية <span class="ltr">namespace</span> إلى <span class="ltr">com.linguaverse.android</span> (مع فصل <span class="ltr">applicationId</span> النهائي وثباته — تغييره بعد النشر يعني تطبيقًا جديدًا)، وأنشئ keystore إنتاجي مع نسخة احتياطية خارج الجهاز ومتغيرات بيئة للتوقيع، واجعل بنية Release تُبنى محليًا بنجاح قبل أول رفَع.</li>
+</ol>
+
+<h3 class="sub">قائمة فحص النشر على Google Play (مكثفة، بعناصر إلزامية فقط)</h3>
+<table class="keep">
+  <colgroup><col style="width:30%"><col style="width:48%"><col style="width:22%"></colgroup>
+  <thead><tr><th>البند</th><th>التفاصيل العملية</th><th>الحالة</th></tr></thead>
+  <tbody>
+    <tr><td>حساب مطوّر</td><td>رسوم 25 دولار لمرة واحدة + تحقق هوية (قد يستغرق أيامًا)؛ للحسابات الفردية الجديدة يطلب Play 12 مختبرًا لاختبار مغلق قبل إنتاج التطبيق الأول</td><td>افتحه اليوم</td></tr>
+    <tr><td>الاستهداف التقني</td><td>استهداف Android 16 / API 36 إلزامي من 31 أغسطس 2026، ورفع بصيغة AAB موقّعة بمفتاح إنتاج</td><td>مستوفى (targetSdk 36)</td></tr>
+    <tr><td>سياسة الخصوصية</td><td>صفحة ويب عمومية؛ مجانية عبر GitHub Pages؛ تصف ما يُخزن محليًا (تقدم تعلم + تفضيلات) وما لا يُجمع</td><td>مطلوب</td></tr>
+    <tr><td>نموذج Data Safety</td><td>بالبنية الحالية: لا تجمع ولا تشارك بيانات على الخوادم = أسهل إجابة ممكنة؛ تتغير الإجابة عند التحول للهجين (Auth/App Check)</td><td>سهل الآن</td></tr>
+    <tr><td>الادعاءات الوظيفية</td><td>كل زر وشاشة يجب أن تعمل؛ أزل شهادة CEFR ودرجات وهمية (انظر W3) قبل الرفع</td><td>مطلوب قبل الرفع</td></tr>
+    <tr><td>أصول المتجر</td><td>أيقونة 512&times;512، لقطات شاشة بجودة (جهاز عربي لإن كان السوق عربيًا)، وصف قصير/مفصل بكلمات مفتاحية ASO</td><td>مطلوب</td></tr>
+    <tr><td>التصنيف والمحتوى</td><td>استبيان تصنيف المحتوى + بيان الإعلانات (سيصبح ضروريًا عند دمج AdMob)</td><td>روتيني</td></tr>
+    <tr><td>مسار الإطلاق</td><td>اختبار داخلي &rarr; مغلق (12 مختبرًا) &rarr; إنتاج تدريجي (10% ثم 50% ثم 100%) مع مراقبة Crashlytics</td><td>موصى به</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ القسم 5: نموذج الربح ============ -->
+<div class="chapter-header">
+  <span class="section-tag">القسم 5</span>
+  <div class="section-title">نموذج الربح بميزانية شبه صفرية</div>
+  
+</div>
+
+<p>قيودك المالية ميزة إجبارية صحية: تجبر المنتج على إثبات قيمته قبل أي إنفاق. الحظ جيد أن أدوات هذه الفئة ناضجة ومجانية: Android Studio، وخطة Firebase Spark، وAdMob، وPlay Console برسومه لمرة واحدة، وGemini بطبقته المجانية للتجربة. الجدول التالي يحسم صورة التكلفة الكاملة للسنة الأولى، ثم ننتقل إلى مصادر الدخل.</p>
+
+<table class="keep">
+  <colgroup><col style="width:34%"><col style="width:22%"><col style="width:44%"></colgroup>
+  <thead><tr><th>البند</th><th>التكلفة</th><th>ملاحظات</th></tr></thead>
+  <tbody>
+    <tr><td>حساب Google Play</td><td>25 دولار مرة واحدة</td><td>الرسمة الإلزامية الوحيدة للنشر</td></tr>
+    <tr><td>دومين + صفحة سياسة خصوصية</td><td>0–12 دولار سنويًا</td><td>يمكن صفر دولار عبر GitHub Pages أو GitLab Pages</td></tr>
+    <tr><td>Firebase (Spark) + App Check</td><td>صفر دولار</td><td>حتى مع آلاف الأحداث اليومية ضمن الحصانة المجانية</td></tr>
+    <tr><td>Gemini API</td><td>صفر دولار ثم حسب الاستخدام</td><td>الطبقة المجانية للتجربة؛ عند النمو: Flash بنحو 0.30 دولار/مليون رمز إدخال — يُغطى من قسم Premium</td></tr>
+    <tr><td>AdMob + Analytics + Crashlytics</td><td>صفر دولار</td><td>مجانية كليًا</td></tr>
+    <tr><td><strong>الإجمالي للسنة الأولى</strong></td><td><strong>25–37 دولار</strong></td><td>أقل من ثمن وجبتين — لا عذر مالي لإطلاق هذا المنتج</td></tr>
+  </tbody>
+</table>
+
+<h3 class="sub">بنية Freemium المقترحة</h3>
+<p><strong>المجاني:</strong> كل الدروس والمفردات والبطاقات والقواعد (المحتوى التعليمي هو أداة الاحتفاظ، لا تحجبه)، مع إعلانات AdMob: بانر في الشاشات غير المنقطعة (المفردات والبطاقات)، وإعلان بيني واحد بعد إتمام كل درسين لا بعد كل درس (حماية التجربة)، وإعلان مكافئ اختياري لفتح حزمة مفردات موسعة أو استعادة سلسلة أيام مفقودة. <strong>Premium</strong> (عبر Play Billing: نحو 2.99–3.99 دولار شهريًا أو 19.99 دولار سنويًا أو 9.99 دولار مدى الحياة كعرض مؤسِّس): معلم ذكي وتقييم كتابة بلا إعلانات وبسقوف سخية عادلة، لأن الذكاء الاصطناعي هو ميزتك التفاضلية الوحيدة ذات كلفة حقيقية — اجعله هو ما يُدفع مقابله، لا الدروس. هذه البنية نفسها التي رفعت Duolingo إلى نحو 1.04 مليار دولار إيرادات 2025 بنمو ~39% ومليوني دولار من كل دولار تقريبًا قادم من الاشتراكات: <strong>الإعلانات تسجّل الدخول، والاشتراكات هي النموذج.</strong></p>
+
+<div class="chart-box">
+  <div class="chart-title">الإيراد الشهري المتوقع عند الشهر الثاني عشر — ثلاثة سيناريوهات</div>
+  <div class="chart-sub">إعلانات AdMob + اشتراكات Premium عبر Play Billing (صافي 85% بعد عمولة المطورين الصغار 15%)</div>
+  <div class="legend">
+    <span><span class="dot" style="background:#9dc4e0;"></span>متحفظ: 500 مستخدم نشط يوميًا</span>
+    <span><span class="dot" style="background:#2d7ab3;"></span>واقعي: 2,000</span>
+    <span><span class="dot" style="background:#1a4a7a;"></span>متفائل: 10,000</span>
+  </div>
+  <div class="bar-row"><div class="bar-label">متحفظ</div><div class="bar-track"><div class="bar-fill" style="width:4%;background:#9dc4e0;"></div></div><div class="bar-val">~25 دولار/شهر</div></div>
+  <div class="bar-row"><div class="bar-label">واقعي</div><div class="bar-track"><div class="bar-fill" style="width:14%;background:#2d7ab3;"></div></div><div class="bar-val">~140 دولار/شهر</div></div>
+  <div class="bar-row"><div class="bar-label">متفائل</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#1a4a7a;"></div></div><div class="bar-val">~1,150 دولار/شهر</div></div>
+  <div class="chart-note">افتراضات معلنة بوضوح: متوسط دخل يومي لكل مستخدم (ARPDAU) إعلاني 0.02 دولار / 0.03 دولار / 0.05 دولار على التوالي (المعايير العالمية: إعلان مكافئ 15–30 دولار وبيني 5–8 دولار وبانر 0.5–1.5 دولار لكل ألف ظهور في الدول من الدرجة الأولى، وأقل بمراحل في المنطقة العربية)، مع تحويل للاشتراك 1% / 1.5% / 2.5% بسعر 2.99 دولار شهريًا. الأرقام ترتيب مقدار لا وعدًا؛ المقياس الحقيقي هو الاحتفاظ الأسبوعي قبل أي رقم إيراد.</div>
+</div>
+
+<div class="callout"><span class="t">قراءة صريحة للأرقام:</span> بالسيناريو المتحفظ لن يحل التطبيق فاتورة كهرباء في السنة الأولى — وهذا طبيعي ومقبول ضمن ميزانية شبه صفرية، فالهدف الحقيقي للسنة الأولى هو إثبات الاحتفاظ (D7 &ge; 15%) لا الربح. نقطة العبور الجدية تبدأ حول 10 آلاف مستخدم نشط يوميًا مع تحويل 2.5%، أي أن استراتيجيتك الأولى كلها تسويق عضوي ومحتوى وجودة، لا تحسين إعلانات.</div>
+
+<h3 class="sub">مؤشرات يجب أن تقيسها من اليوم الأول (كلها مجانية عبر Firebase Analytics)</h3>
+<ul class="list">
+  <li><strong>الاحتفاظ:</strong> D1 / D7 / D30 — إن لم يتجاوز D7 نحو 15% فالمشكلة في المحتوى وتجربة أول 5 دقائق، لا في التسويق.</li>
+  <li><strong>إتمام أول درس:</strong> نسبة من يفتح التطبيق ويكمل درسًا كاملًا أول جلسة — هدف أولي &ge; 60%.</li>
+  <li><strong>استقرار:</strong> نسبة الأعطال &lt; 1% وANR &lt; 0.5% (شرط بقاء الترتيب في نتائج المتجر).</li>
+  <li><strong>اقتصاد الوحدة:</strong> ARPDAU إعلاني وتحويل الاشتراك شهريًا — لاتخاذ قرار متى ترفع سقف AI المجاني أو تخفضه.</li>
+</ul>
+<!-- ============ القسم 6: خارطة الطريق ============ -->
+<div class="chapter-header">
+  <span class="section-tag">القسم 6</span>
+  <div class="section-title">خارطة طريق 6 أشهر — ثلاث مراحل بمؤشرات قياس</div>
+  
+</div>
+
+<p>الخارطة تترجم كل ما سبق إلى توقيت تنفيذي بثلاث مراحل، لكل مرحلة هدف وحيد واضح ومؤشرات قرار. القاعدة المنهجية: لا مرحلة تبدأ قبل أن تُغلق مؤشرات سابقتها، لأن كل مرحلة تبني على معرفة السوق لا على الافتراضات.</p>
+
+<table>
+  <colgroup><col style="width:14%"><col style="width:16%"><col style="width:40%"><col style="width:30%"></colgroup>
+  <thead><tr><th>المرحلة</th><th>المدة</th><th>الأهداف التنفيذية</th><th>مؤشرات النجاح (KPIs)</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>التأسيس</strong></td><td>الشهر 1–2</td>
+      <td>تنفيذ خطة القسم 4 كاملة (الأمن، صدق الواجهة، RTL/عربية، معمارية، تصلب الإصدار)؛ إغلاق حساب Play؛ اختبار مغلق مع 12–50 مختبرًا من الجمهور المستهدف؛ Firebase Analytics + Crashlytics</td>
+      <td>أعطال &lt; 1%؛ إتمام أول درس &ge; 60%؛ ملاحظات مختبرين تؤدي لإصلاح أهم 5 إزعاجات</td>
+    </tr>
+    <tr>
+      <td><strong>الإطلاق</strong></td><td>الشهر 3–4</td>
+      <td>نشر إنتاجي تدريجي؛ دمج AdMob بثلاث صيغ مقيّدة؛ مصانع محتوى: توليد دروس الألمانية والإنجليزية بمساعدة Gemini أثناء التطوير بإشراف بشري كامل (هدف 10 دروس قابلة للعب لكل لغة قبل إعلانها)؛ ASO عربي/ألماني أولي</td>
+      <td>1,000 تثبيت عضوي؛ D7 &ge; 15%؛ تقييم المتجر &ge; 4.0؛ صفر رفض سياسات</td>
+    </tr>
+    <tr>
+      <td><strong>التسييل</strong></td><td>الشهر 5–6</td>
+      <td>إطلاق Premium عبر Play Billing؛ تجارب تسعير (مدى الحياة مقابل سنوي)؛ محتوى فيديو قصير عضوي (TikTok/Reels/Shorts) بجلسات قبل/بعد؛ أساس هجين: Firebase Auth + مزامنة تجريبية لمسار التقدم كإيذان بمسار SaaS</td>
+      <td>تحويل اشتراك &ge; 1%؛ ARPDAU &ge; 0.03 دولار؛ نمو تثبيت أسبوعي موجب ثلاثة أسابيع متتالية</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 class="sub">قائمة أول 30 يومًا — مرتبة حسب ما يمنع ما بعده</h3>
+<ol class="steps">
+  <li><strong>اليوم 1–2:</strong> قيّد مفتاح Gemini الحالي في Google AI Studio (قيود API + سقف إنفاق صفر مؤقتًا) — افترض أنه مكشوف منذ أول بناء. أنشئ مشروع Firebase وفعّل App Check.</li>
+  <li><strong>اليوم 3:</strong> افتح حساب Google Play (25 دولار) وابدأ التحقق — لأنه قد يستغرق أيامًا وكل ما بعده ينتظره.</li>
+  <li><strong>اليوم 4–7:</strong> استبدل الاستدعاء المباشر بـFirebase AI Logic، واحذف المفتاح من مسار البناء كليًا (<span class="ltr">.env</span> يبقى للتطوير المحلي فقط).</li>
+  <li><strong>الأسبوع 2:</strong> حملة صدق الواجهة: حذف شهادة CEFR، إخفاء درجات المهارات حتى تُحسب فعليًا، وسم «متحدٍّ افتراضي» في الصدارة، حذف مفتاح عدم الاتصال المزيف، وتقليص اللغات المعروضة إلى المتاح.</li>
+  <li><strong>الأسبوع 2–3:</strong> استكمال RTL والعربية (استخراج السلاسل المتبقي + AutoMirrored + اختبار على جهاز عربي حقيقي).</li>
+  <li><strong>الأسبوع 3:</strong> keystore إنتاجي بنسخ احتياطي خارج الجهاز، وتفعيل التصغير وقواعد ProGuard، وبناء Release ناجح محليًا.</li>
+  <li><strong>الأسبوع 3–4:</strong> التسمية النهائية للحزمة (<span class="ltr">com.linguaverse.android</span> أو ما تشابه) قبل أول رفَع — لا تتغير بعدها أبدًا.</li>
+  <li><strong>الأسبوع 4:</strong> سياسة خصوصية (GitHub Pages)، وأصول المتجر (أيقونة 512، لقطات عربية/ألمانية، وصف ASO)، ورفع أول نسخة للاختبار الداخلي.</li>
+  <li><strong>يوم 28–30:</strong> توسيع الاختبار المغلق إلى 12+ مختبرًا (شرط الحسابات الفردية الجديدة للوصول للإنتاج)، وتركيب Analytics/Crashlytics، وتثبيت لوحة مؤشرات الأسبوع الأول.</li>
+</ol>
+
+<!-- ============ الخاتمة ============ -->
+<div class="chapter-header">
+  <span class="section-tag">الخاتمة</span>
+  <div class="section-title">الحكم النهائي والخطوة التالية</div>
+  
+</div>
+
+<p><strong>LinguaVerse ليس SaaS، وهو ليس بحاجة أن يكون كذلك الآن.</strong> هو تطبيق مستقل محلي ببنية أندرويد حديثة وأصيلة، قرب من النشر أكثر مما يتوقعه معظم المشاريع في هذه المرحلة: خارطة إصلاح داخلي نفّذت أغلبها فعليًا، وطبقة بيانات تحترم المستخدم، وحدس هندسي صحيح في معالجة الأخطاء والأمن تدريجيًا. فجواته الثلاث الكبرى معلومة ومقيسة: مفتاح ذكاء اصطناعي مكشوف، وادعاءات واجهة لا تملك أصولًا، ومحتوى تعليمي أقل مما تعرض واجهته — وكلها قابلة للإغلاق خلال 4 إلى 6 أسابيع عمل فردي منضبط بلا أي إنفاق يُذكر غير 25 دولار رسوم المتجر.</p>
+
+<p>الفرصة التجارية حقيقية إن أُخذت الترتيب الصحيح: سوق تعلم اللغات ينمو والاشتراكات هي محرك قيمته الأساسية كما يثبت أداء Duolingo، والحد الأدنى الحقيقي للنجاح ليس رأس مال بل انضباط: صدق واجهة، محتوى يُحترم، وقياس مؤشرات أسبوعيًا. ابدأ الصغير والقياس الكبير: انشر مستقلًا، وثبت الاحتفاظ، ثم اشترِ تعقيد الهجين بعائد مثبت لا بأمل — وعندما يطلب السوق خدمة متعددة الأجهزة وحسابات، ستكون قاعدة الكود الحالية جاهزة للانتقال لأن المعمارية أصبحت معزولة الطبقات منذ اليوم الأول.</p>
+
+<div class="callout ok"><span class="t">الخطوة التالية — هذا الأسبوع تحديدًا:</span> (1) قيّد المفتاح المكشوف وأنشئ مشروع Firebase، (2) افتح حساب Play وابدأ التحقق، (3) احذف بطاقة شهادة CEFR ودرجات المهارات الوهمية من الملف الشخصي. ثلاث خطوات لا تتجاوز ساعات قليلة، لكنها تحوّل المشروع من «نموذج أولي واعد» إلى «منتج في طريقه الرسمي إلى المتجر».</div>
+
+</div><!-- /main-content -->
+
+<!-- ================= ENDING ================= -->
+<div class="ending">
+  
+  <div class="inner">
+    <div class="big">من نموذج أولي واعد<br>إلى منتج يُقاس بأثره</div>
+    
+    <div class="small">صدق الواجهة أولًا، والأمن قبل النشر، والقياس قبل التوسع.<br>كل ما تبقى تنفيذ، وكل أسبوع تأخير هو مستخدم لم يصل بعد.</div>
+  </div>
+  <div class="foot">
+    <span>LINGUAVERSE &middot; EVALUATION REPORT</span>
+    <span>أغسطس 2026</span>
+  </div>
+</div>
+
+</body>
+</html>

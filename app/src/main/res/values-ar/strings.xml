@@ -1,0 +1,161 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">LinguaVerse</string>
+
+    <!-- Home Screen -->
+    <string name="continue_learning">واصل التعلم</string>
+    <string name="skill_practice_15_modules">تمرين المهارات (15 وحدة)</string>
+    <string name="view_all">عرض الكل</string>
+    <string name="course_curriculum">منهج الدورة</string>
+    <string name="ai_tutor">المدرب بالذكاء الاصطناعي</string>
+    <string name="ai_teacher">المعلم بالذكاء الاصطناعي</string>
+    <string name="ai_teacher_tutor">معلم ومدرب الذكاء الاصطناعي</string>
+    <string name="ai_chat_feedback">تمرن على المحادثة مع ملاحظات من الذكاء الاصطناعي</string>
+    <string name="start_lesson_xp">ابدأ الدرس (+%1$d XP)</string>
+    <string name="xp_reward">+%1$d XP</string>
+    <string name="daily_goal">الهدف اليومي</string>
+    <string name="s_3_days_left">بقي 3 أيام</string>
+
+    <!-- Lesson Screen -->
+    <string name="close">إغلاق</string>
+    <string name="question_of_exercises">السؤال %1$d من %2$d</string>
+    <string name="check_answer">تحقق من الإجابة</string>
+    <string name="continue_action">متابعة</string>
+    <string name="practiced_this">تمرنت على هذا</string>
+    <string name="excellent">ممتاز!</string>
+    <string name="not_quite_right">ليست صحيحة تماماً</string>
+    <string name="correct_answer">إجابة صحيحة!</string>
+    <string name="nice_practice">تمرين جيد!</string>
+    <string name="keep_going">أكمل.</string>
+    <string name="correct_answer_feedback">الصحيح: %1$s</string>
+    <string name="practice_out_loud">تدرّب بصوت عالٍ</string>
+    <string name="speak_text">تحدث بالنص</string>
+    <string name="type_answer_in_language">اكتب إجابتك باللغة %1$s</string>
+
+    <!-- Lesson Completion -->
+    <string name="lesson_completed">اكتمل الدرس!</string>
+    <string name="you_completed_title">أكملت “%1$s”</string>
+    <string name="coins_reward">+%1$d عملة</string>
+    <string name="return_to_dashboard">العودة إلى اللوحة الرئيسية</string>
+
+    <!-- AI Chat Screen -->
+    <string name="ai_chat_input_placeholder">اسأل أو رد بلغة الهدف...</string>
+    <string name="start_conversation">ابدأ محادثة مع المدرب الذكي</string>
+    <string name="ai_chat_desc">اسأل أسئلة، تدرب على الحوار، أو اطلب ملاحظات قواعد فورية!</string>
+    <string name="ai_correction">💡 التصحيح: %1$s</string>
+    <string name="ai_suggestion">✨ صياغة أفضل: %1$s</string>
+    <string name="send_message">إرسال</string>
+
+    <!-- Writing Evaluation -->
+    <string name="ai_writing_lab">مختبر الكتابة الذكي</string>
+    <string name="corrected_version">النسخة المصححة:</string>
+    <string name="ai_feedback">ملاحظات الذكاء الاصطناعي:</string>
+    <string name="analyze_writing_with_ai">حلل كتابتك بالذكاء الاصطناعي</string>
+    <string name="writing_score_format">النتيجة: %1$d/100</string>
+    <string name="prompt">الموضوع</string>
+    <string name="escribe_aqu_tu_respuesta">اكتب إجابتك هنا...</string>
+
+    <!-- Speaking Practice -->
+    <string name="speaking_practice">تمرين التحدث</string>
+    <string name="play_again">تشغيل مجدداً</string>
+    <string name="speaking_instruction">استمع ثم كرر الجملة بصوت عالٍ وبالوتيرة التي تناسبك.</string>
+
+    <!-- Reading Story -->
+    <string name="listen_full_story">استمع للقصة كاملة</string>
+    <string name="tap_to_translate">اضغط على أي كلمة لترجمتها:</string>
+    <string name="meaning_in_context">المعنى في السياق</string>
+    <string name="word_translation">“%1$s” → الترجمة: %2$s</string>
+
+    <!-- Flashcards -->
+    <string name="no_flashcards_available_yet">لا توجد بطاقات تعليمية بعد.</string>
+    <string name="card_of_total">البطاقة %1$d من %2$d</string>
+    <string name="next_card">البطاقة التالية</string>
+    <string name="search_vocabulary">ابحث في المفردات...</string>
+
+    <!-- Generic Skill View -->
+    <string name="generic_skill_practice">تمرين %1$s</string>
+    <string name="interactive_modules_ready">الوحدات التفاعلية جاهزة للتمرين.</string>
+
+    <!-- Skills Hub -->
+    <string name="skill_hub_title">مركز مهارات اللغة</string>
+    <string name="skill_hub_subtitle">أتقن جميع الكفاءات اللغوية الخمس عشرة الأساسية بمساعدة الذكاء الاصطناعي</string>
+
+    <!-- Profile Screen -->
+    <string name="learning_profile">ملفك التعليمي</string>
+    <string name="current_level">المستوى الحالي: </string>
+    <string name="total_xp">إجمالي النقاط XP</string>
+    <string name="streak_days_format">%1$d يوم</string>
+    <string name="profile_lessons">الدروس</string>
+    <string name="xp_earned_format">+%1$d XP</string>
+    <string name="achievements_title">الإنجازات</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">التفضيلات والإعدادات</string>
+    <string name="appearance">المظهر</string>
+    <string name="dark_mode">الوضع الداكن</string>
+    <string name="audio_pronunciation">الصوت والنطق</string>
+    <string name="default_audio_speed">سرعة الصوت الافتراضية</string>
+    <string name="admin_panel">استوديو إدارة المحتوى</string>
+    <string name="admin_description">إدارة اللغات والدروس والمفردات والتحليلات</string>
+
+    <!-- Leaderboard -->
+    <string name="weekly_league">الدوري الأسبوعي</string>
+    <string name="league_promote_text">الدوري الذهبي • أول 3 يتأهلون إلى الماسي</string>
+    <string name="league_simulated_note">لوحة صدارة تجريبية — المتعلمون الآخرون بيانات محاكاة وليسوا حسابات حقيقية</string>
+    <string name="badge_league">دوري %1$s</string>
+    <string name="leaderboard_you_label">%1$s (أنت)</string>
+    <string name="leaderboard_simulated_label">بيانات محاكاة</string>
+    <string name="xp_value_format">%1$d XP</string>
+
+    <!-- Admin Panel -->
+    <string name="admin_panel_title">لوحة الإدارة واستوديو المحتوى</string>
+    <string name="tab_analytics">التحليلات</string>
+    <string name="tab_languages">اللغات</string>
+    <string name="tab_lessons">الدروس</string>
+    <string name="tab_vocabulary">المفردات</string>
+    <string name="add_new_language">إضافة لغة جديدة</string>
+    <string name="lang_code_hint">رمز اللغة (مثل “nl” و “hi” و “sv”)</string>
+    <string name="lang_name_hint">اسم اللغة (مثل “Dutch”)</string>
+    <string name="native_name_hint">الاسم الأصلي (مثل “Nederlands”)</string>
+    <string name="description_hint">الوصف</string>
+    <string name="add_language_btn">إضافة اللغة إلى الكتالوج</string>
+    <string name="language_added">تمت إضافة اللغة بنجاح!</string>
+    <string name="create_lesson">إنشاء درس مخصص</string>
+    <string name="lesson_title_hint">عنوان الدرس</string>
+    <string name="exercise_question_hint">سؤال تمرين تجريبي</string>
+    <string name="correct_answer_hint">الإجابة الصحيحة</string>
+    <string name="save_lesson_btn">حفظ الدرس المخصص</string>
+    <string name="lesson_published">تم نشر الدرس بنجاح!</string>
+    <string name="target_word_hint">كلمة اللغة الهدف</string>
+    <string name="translation_hint">الترجمة</string>
+    <string name="example_sentence_hint">جملة مثال</string>
+    <string name="add_vocabulary_word">إضافة كلمة مفردات</string>
+    <string name="vocabulary_word_added">تمت إضافة كلمة المفردات!</string>
+    <string name="category_e_g_travel_food">التصنيف (مثل: السفر، الطعام)</string>
+    <string name="flag_emoji_e_g">إيموجي العلم (مثل 🇳🇱)</string>
+    <string name="system_overview">نظرة عامة على النظام</string>
+    <string name="active_learners_count">المتعلمون النشطون: 12,450</string>
+    <string name="supported_languages_text">اللغات المدعومة: غير محدود (12 افتراضية مفعّلة)</string>
+    <string name="total_exercises_completed_148_920">إجمالي التمارين المكتملة: 148,920</string>
+    <string name="ai_server_uptime_99_98">استقرار خادم الذكاء الاصطناعي: 99.98%</string>
+
+    <!-- Misc existing -->
+    <string name="add_word_to_vocabulary">إضافة كلمة إلى المفردات</string>
+    <string name="favorite">المفضلة</string>
+    <string name="play">تشغيل</string>
+    <string name="listen">استماع</string>
+    <string name="speak">تحدث</string>
+    <string name="streak">الاستمرارية</string>
+    <string name="success">نجاح</string>
+    <string name="xp_points">نقاط XP</string>
+    <string name="avatar">الصورة الرمزية</string>
+    <string name="back">رجوع</string>
+    <string name="level">المستوى: </string>
+    <string name="select_language">اختر اللغة</string>
+    <string name="hero_banner_desc">اللافتة الرئيسية</string>
+    <string name="open_settings">فتح الإعدادات</string>
+    <string name="admin">الإدارة</string>
+    <string name="vocabulary">المفردات</string>
+    <string name="no_items_yet">لا توجد عناصر بعد</string>
+    <string name="no_data_available">لا توجد بيانات متاحة</string>
+</resources>
