@@ -193,6 +193,11 @@ data class RemoteFlashcard(
         exampleSentence = exampleSentence,
         phonetic = phonetic,
         intervalDays = previous?.intervalDays ?: intervalDays,
+        // SM-2 progress is learner-specific: never overwrite it from the server.
+        easeFactor = previous?.easeFactor ?: 2.5,
+        repetitions = previous?.repetitions ?: 0,
+        nextReviewAt = previous?.nextReviewAt ?: 0,
+        lastReviewAt = previous?.lastReviewAt ?: 0,
         isMastered = previous?.isMastered ?: false
     )
 }

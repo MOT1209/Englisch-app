@@ -70,6 +70,10 @@
     <string name="no_flashcards_available_yet">Noch keine Karteikarten verfügbar.</string>
     <string name="card_of_total">Karte %1$d von %2$d</string>
     <string name="next_card">Nächste Karte</string>
+    <string name="show_card_answer">Antwort anzeigen</string>
+    <string name="review_again">Noch einmal</string>
+    <string name="review_good">Gut</string>
+    <string name="review_easy">Leicht</string>
     <string name="search_vocabulary">Vokabeln suchen...</string>
 
     <!-- Generic Skill View -->

@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.di.AppContainer
 import com.example.data.prefs.UserPreferences
 import com.example.data.model.*
+import com.example.domain.ReviewGrade
+import com.example.domain.SrsScheduler
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -142,6 +144,32 @@ class MainViewModel(container: AppContainer) : ViewModel() {
     fun toggleFavoriteVocabulary(vocabulary: Vocabulary) {
         viewModelScope.launch {
             repository.toggleFavoriteVocab(vocabulary)
+        }
+    }
+
+    /**
+     * Records a flashcard review through the SM-2 scheduler and persists the new
+     * schedule (interval, ease factor, repetitions, next review date) to Room.
+     */
+    fun gradeFlashcard(flashcard: Flashcard, grade: ReviewGrade) {
+        viewModelScope.launch {
+            val result = SrsScheduler.grade(
+                grade = grade,
+                easeFactor = flashcard.easeFactor,
+                repetitions = flashcard.repetitions,
+                intervalDays = flashcard.intervalDays,
+                now = System.currentTimeMillis()
+            )
+            repository.updateFlashcard(
+                flashcard.copy(
+                    intervalDays = result.intervalDays,
+                    easeFactor = result.easeFactor,
+                    repetitions = result.repetitions,
+                    nextReviewAt = result.nextReviewAt,
+                    lastReviewAt = System.currentTimeMillis(),
+                    isMastered = result.isMastered
+                )
+            )
         }
     }
 

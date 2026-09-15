@@ -23,10 +23,29 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
 }
 
 export async function updateProfile(req: Request, res: Response): Promise<void> {
+  const { username, email, avatarUrl, nativeLanguageCode, dailyGoalXp } = req.body as {
+    username?: string;
+    email?: string;
+    avatarUrl?: string;
+    nativeLanguageCode?: string;
+    dailyGoalXp?: number;
+  };
+
+  const data: { username?: string; email?: string; avatarUrl?: string; nativeLanguageId?: string; dailyGoalXp?: number } = {};
+  if (username !== undefined) data.username = username;
+  if (email !== undefined) data.email = email;
+  if (avatarUrl !== undefined) data.avatarUrl = avatarUrl;
+  if (nativeLanguageCode !== undefined) {
+    const language = await prisma.language.findUnique({ where: { code: nativeLanguageCode } });
+    if (!language) throw new NotFoundError('Language');
+    data.nativeLanguageId = language.id;
+  }
+  if (dailyGoalXp !== undefined) data.dailyGoalXp = dailyGoalXp;
+
   const user = await prisma.user.update({
     where: { id: req.user!.userId },
-    data: req.body,
-    select: { id: true, username: true, email: true, xp: true, coins: true, streakCount: true },
+    data,
+    select: { id: true, username: true, email: true, avatarUrl: true, nativeLanguageId: true, dailyGoalXp: true, xp: true, coins: true, streakCount: true },
   });
 
   res.json({ success: true, data: user });

@@ -8,6 +8,8 @@ import {
   getMyProgress,
 } from '../controllers/user.controller';
 import { authenticate } from '../middleware/auth';
+import { validate } from '../middleware/validate';
+import { updateProfileSchema } from '../validators/user.validator';
 
 const router = Router();
 
@@ -15,7 +17,7 @@ const router = Router();
 router.use(authenticate);
 
 router.get('/me', getProfile);
-router.put('/me', updateProfile);
+router.put('/me', validate(updateProfileSchema), updateProfile);
 
 router.get('/me/languages', getMyLanguages);
 router.post('/me/languages', addLanguage);

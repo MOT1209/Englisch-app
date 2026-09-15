@@ -1,5 +1,6 @@
 package com.example.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -109,7 +110,10 @@ data class GrammarRule(
 
 @Entity(
     tableName = "flashcards",
-    indices = [Index("languageCode")]
+    indices = [
+        Index("languageCode"),
+        Index("nextReviewAt")
+    ]
 )
 data class Flashcard(
     @PrimaryKey val id: String,
@@ -119,6 +123,10 @@ data class Flashcard(
     val exampleSentence: String,
     val phonetic: String = "",
     val intervalDays: Int = 1,
+    @ColumnInfo(defaultValue = "2.5") val easeFactor: Double = 2.5,
+    @ColumnInfo(defaultValue = "0") val repetitions: Int = 0,
+    @ColumnInfo(defaultValue = "0") val nextReviewAt: Long = 0,
+    @ColumnInfo(defaultValue = "0") val lastReviewAt: Long = 0,
     val isMastered: Boolean = false
 )
 

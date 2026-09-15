@@ -20,6 +20,7 @@ import com.example.R
 import com.example.ai.AiFailure
 import com.example.ai.WritingEvaluationResult
 import com.example.data.model.*
+import com.example.domain.ReviewGrade
 import com.example.ui.components.AiErrorBanner
 import com.example.ui.components.AudioSpeedSelector
 import com.example.ui.components.buttons.ButtonSize
@@ -46,6 +47,7 @@ fun SkillDetailScreen(
     onSetAudioSpeed: (Float) -> Unit,
     onEvaluateWriting: (String, String) -> Unit,
     onToggleFavoriteVocab: (Vocabulary) -> Unit,
+    onGradeCard: (Flashcard, ReviewGrade) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -81,7 +83,8 @@ fun SkillDetailScreen(
                 )
                 SkillType.FLASHCARDS -> FlashcardsView(
                     flashcards = flashcards,
-                    onSpeakText = onSpeakText
+                    onSpeakText = onSpeakText,
+                    onGradeCard = onGradeCard
                 )
                 SkillType.READING -> ReadingStoryView(
                     targetLanguageCode = targetLanguageCode,
@@ -244,7 +247,8 @@ private fun GrammarView(
 @Composable
 private fun FlashcardsView(
     flashcards: List<Flashcard>,
-    onSpeakText: (String) -> Unit
+    onSpeakText: (String) -> Unit,
+    onGradeCard: (Flashcard, ReviewGrade) -> Unit
 ) {
     if (flashcards.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -257,9 +261,16 @@ private fun FlashcardsView(
         return
     }
 
+    // Due cards surface first; brand-new cards have nextReviewAt = 0.
+    val deck = remember(flashcards) { flashcards.sortedBy { it.nextReviewAt } }
     var currentIndex by remember { mutableIntStateOf(0) }
     var showBack by remember { mutableStateOf(false) }
-    val currentCard = flashcards.getOrNull(currentIndex) ?: flashcards.first()
+    val currentCard = deck[currentIndex]
+
+    fun next() {
+        showBack = false
+        currentIndex = (currentIndex + 1) % deck.size
+    }
 
     Column(
         modifier = Modifier
@@ -269,7 +280,7 @@ private fun FlashcardsView(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(R.string.card_of_total, currentIndex + 1, flashcards.size),
+            text = stringResource(R.string.card_of_total, currentIndex + 1, deck.size),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -281,7 +292,7 @@ private fun FlashcardsView(
                 .fillMaxWidth()
                 .height(260.dp)
                 .testTag("flashcard_flip_container")
-                .clickable { showBack = !showBack },
+                .clickable { showBack = true },
             backgroundColor = if (showBack) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primaryContainer,
             borderColor = if (showBack) MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
             shape = MaterialTheme.shapes.extraLarge
@@ -330,14 +341,46 @@ private fun FlashcardsView(
 
         Spacer(modifier = Modifier.height(LinguaVerseDimens.SectionSpacing))
 
-        LinguaPrimaryButton(
-            text = stringResource(R.string.next_card),
-            onClick = {
-                showBack = false
-                currentIndex = (currentIndex + 1) % flashcards.size
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (!showBack) {
+            LinguaPrimaryButton(
+                text = stringResource(R.string.show_card_answer),
+                onClick = { showBack = true },
+                modifier = Modifier.fillMaxWidth()
+            )
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(LinguaVerseDimens.CompactSpacing)
+            ) {
+                OutlinedButton(
+                    onClick = {
+                        onGradeCard(currentCard, ReviewGrade.AGAIN)
+                        next()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(stringResource(R.string.review_again))
+                }
+                OutlinedButton(
+                    onClick = {
+                        onGradeCard(currentCard, ReviewGrade.GOOD)
+                        next()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(stringResource(R.string.review_good))
+                }
+                Button(
+                    onClick = {
+                        onGradeCard(currentCard, ReviewGrade.EASY)
+                        next()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(stringResource(R.string.review_easy))
+                }
+            }
+        }
     }
 }
 

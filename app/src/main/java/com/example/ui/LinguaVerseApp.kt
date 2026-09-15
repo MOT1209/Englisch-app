@@ -243,6 +243,7 @@ fun LinguaVerseApp(
                             )
                         },
                         onToggleFavoriteVocab = { viewModel.toggleFavoriteVocabulary(it) },
+                        onGradeCard = { card, grade -> viewModel.gradeFlashcard(card, grade) },
                         onBack = { navController.popBackStack() }
                     )
                 }

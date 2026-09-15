@@ -21,7 +21,7 @@ import com.example.data.model.*
         Achievement::class,
         ChatMessage::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -34,6 +34,22 @@ abstract class AppDatabase : RoomDatabase() {
          * Index names must match exactly what Room derives from the @Index
          * annotations, otherwise the schema validation on open will fail.
          */
+        /**
+         * v2 -> v3: flashcard SRS columns (SM-2 scheduling) added to the
+         * flashcards table with defaults equal to the Kotlin defaults, plus the
+         * index the due-card query filters on. Column types must match what Room
+         * derives from the entity, otherwise schema validation on open fails.
+         */
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `flashcards` ADD COLUMN `easeFactor` REAL NOT NULL DEFAULT 2.5")
+                db.execSQL("ALTER TABLE `flashcards` ADD COLUMN `repetitions` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE `flashcards` ADD COLUMN `nextReviewAt` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE `flashcards` ADD COLUMN `lastReviewAt` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_flashcards_nextReviewAt` ON `flashcards` (`nextReviewAt`)")
+            }
+        }
+
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_lessons_languageCode` ON `lessons` (`languageCode`)")
@@ -60,7 +76,7 @@ abstract class AppDatabase : RoomDatabase() {
                     // No fallbackToDestructiveMigration: it silently wiped every
                     // user's progress on any schema change. Schema changes must
                     // ship a Migration here instead.
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                     .also { INSTANCE = it }
             }

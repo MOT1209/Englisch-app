@@ -70,6 +70,10 @@
     <string name="no_flashcards_available_yet">لا توجد بطاقات تعليمية بعد.</string>
     <string name="card_of_total">البطاقة %1$d من %2$d</string>
     <string name="next_card">البطاقة التالية</string>
+    <string name="show_card_answer">إظهار الإجابة</string>
+    <string name="review_again">مرة أخرى</string>
+    <string name="review_good">جيد</string>
+    <string name="review_easy">سهل</string>
     <string name="search_vocabulary">ابحث في المفردات...</string>
 
     <!-- Generic Skill View -->
