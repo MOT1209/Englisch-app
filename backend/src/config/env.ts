@@ -1,4 +1,4 @@
-﻿import dotenv from 'dotenv';
+import dotenv from 'dotenv';
 import { z } from 'zod';
 
 dotenv.config();
@@ -11,9 +11,30 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
-  // Gemini ظ¤ server-side only, never shipped inside the app APK.
+
+  // --- AI providers (server-side only, never shipped inside the app APK) ---
+  // Comma-separated failover order. Known ids: gemini, groq, zen.
+  // Providers with no API key are skipped automatically.
+  AI_PROVIDER_ORDER: z.string().default('gemini,groq,zen'),
+  // Hard ceiling per single provider call, so one hung provider cannot stall a request.
+  AI_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(25_000),
+
+  // Google Gemini (native generateContent surface).
   GEMINI_API_KEY: z.string().default(''),
   GEMINI_MODEL: z.string().default('gemini-2.5-flash'),
+
+  // Groq (OpenAI-compatible chat/completions).
+  GROQ_API_KEY: z.string().default(''),
+  GROQ_MODEL: z.string().default('openai/gpt-oss-120b'),
+  GROQ_BASE_URL: z.string().default('https://api.groq.com/openai/v1'),
+
+  // OpenCode Zen gateway. Zen exposes several surfaces per model; the
+  // OpenAI-compatible `/chat/completions` one is used here, so the default
+  // model must be one Zen serves there (DeepSeek/GLM/Kimi/MiniMax families).
+  OPENCODE_ZEN_API_KEY: z.string().default(''),
+  OPENCODE_ZEN_MODEL: z.string().default('deepseek-v4-flash'),
+  OPENCODE_ZEN_BASE_URL: z.string().default('https://opencode.ai/zen/v1'),
+
   // Shared secret the Android app sends in `X-App-Token` to reach the AI proxy.
   APP_TOKEN: z.string().min(8).default('change-me-strong-app-token'),
   // Per-caller daily ceiling for AI calls (the free tier shrinks; abuse burns money).
@@ -23,7 +44,7 @@ const envSchema = z.object({
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
-  console.error('ظإî Invalid environment variables:', parsed.error.flatten().fieldErrors);
+  console.error('Invalid environment variables:', parsed.error.flatten().fieldErrors);
   process.exit(1);
 }
 

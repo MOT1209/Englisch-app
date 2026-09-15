@@ -9,7 +9,7 @@ import userRoutes from './user.routes';
 const router = Router();
 
 router.use('/auth', authRoutes);
-router.use('/ai', aiRoutes);            // Gemini proxy (key stays server-side)
+router.use('/ai', aiRoutes);            // AI proxy (provider keys stay server-side)
 router.use('/languages', languageRoutes);
 router.use('/', lessonRoutes);          // Units, lessons, exercises
 router.use('/', vocabularyRoutes);      // Vocabulary, flashcards

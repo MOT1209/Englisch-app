@@ -1,56 +1,16 @@
 import { Request, Response } from 'express';
-import { env } from '../config/env';
+import { generateText, providerStatus } from '../ai/gateway';
 import { consumeAiQuota } from '../utils/rateLimit';
 import { AppError } from '../utils/errors';
-
-interface GeminiPart {
-  text?: string;
-}
-interface GeminiContent {
-  role?: string;
-  parts: GeminiPart[];
-}
-interface GeminiPayload {
-  contents: GeminiContent[];
-  systemInstruction?: GeminiContent;
-}
-
-const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
-
-/**
- * Calls Gemini.generateContent and returns the concatenated text of the first
- * candidate. The billing-attached key lives only here, read from server env.
- */
-async function callGemini(payload: GeminiPayload): Promise<string> {
-  if (!env.GEMINI_API_KEY) {
-    throw new AppError('AI service is not configured on the server', 503);
-  }
-
-  const url = `${GEMINI_BASE}/${encodeURIComponent(env.GEMINI_MODEL)}:generateContent?key=${encodeURIComponent(env.GEMINI_API_KEY)}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  if (response.status === 429) {
-    throw new AppError('AI service rate limit exceeded (provider)', 429);
-  }
-  if (!response.ok) {
-    const body = await response.text().catch(() => '');
-    throw new AppError(`Gemini API error (${response.status}): ${body.slice(0, 200)}`, 502);
-  }
-
-  const json = (await response.json()) as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-  };
-  const text = json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
-  return text.trim();
-}
 
 function clientIdentity(req: Request): string | null {
   const deviceId = req.headers['x-device-id'];
   return typeof deviceId === 'string' && deviceId.length > 0 ? deviceId : null;
+}
+
+/** Reports which providers are configured, in failover order. No keys are exposed. */
+export function providers(_req: Request, res: Response): void {
+  res.json({ success: true, data: providerStatus() });
 }
 
 const CHAT_SYSTEM_PROMPT = (targetLanguage: string, cefrLevel: string): string =>
@@ -79,15 +39,14 @@ export async function chat(req: Request, res: Response): Promise<void> {
     cefrLevel: string;
   };
 
-  const payload: GeminiPayload = {
-    contents: messages.map((m) => ({
-      role: m.role === 'tutor' ? 'model' : 'user',
-      parts: [{ text: m.text }],
+  const { text: raw } = await generateText({
+    systemPrompt: CHAT_SYSTEM_PROMPT(targetLanguage, cefrLevel),
+    messages: messages.map((m) => ({
+      role: m.role === 'tutor' ? 'assistant' : 'user',
+      text: m.text,
     })),
-    systemInstruction: { parts: [{ text: CHAT_SYSTEM_PROMPT(targetLanguage, cefrLevel) }] },
-  };
-
-  const raw = await callGemini(payload);
+    temperature: 0.7,
+  });
   if (!raw) throw new AppError('AI returned an empty response', 502);
 
   let replyText = ''; // Default empty string, not null
@@ -141,12 +100,12 @@ export async function write(req: Request, res: Response): Promise<void> {
     targetLanguage: string;
   };
 
-  const payload: GeminiPayload = {
-    contents: [{ parts: [{ text: userText }] }],
-    systemInstruction: { parts: [{ text: WRITE_SYSTEM_PROMPT(targetLanguage, prompt) }] },
-  };
-
-  const raw = await callGemini(payload);
+  const { text: raw } = await generateText({
+    systemPrompt: WRITE_SYSTEM_PROMPT(targetLanguage, prompt),
+    messages: [{ role: 'user', text: userText }],
+    // Grading wants repeatability, so run cooler than the free-flowing tutor chat.
+    temperature: 0.3,
+  });
   if (!raw) throw new AppError('AI returned an empty response', 502);
 
   let score = 85;

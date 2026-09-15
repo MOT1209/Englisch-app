@@ -158,7 +158,7 @@
   <b>الحكم العام:</b>
   التطبيق انتقل من «نموذج أولي يوهم بميزات» إلى مشروع له أساس هندسي حقيقي —
   حَقن اعتماديات، تنقّل رسمي بـ <code>NavHost</code>، هجرات Room مُصدَّرة، منطق تصحيح مُختبَر،
-  خادم وسيط يُخفي مفتاح Gemini ويعمل فعليًا، وتدويل عربي/ألماني.
+  خادم وسيط يُخفي مفاتيح المزوّدين ويعمل فعليًا، وتدويل عربي/ألماني.
   <br /><br />
   <b>لكن</b> الخادم الجديد أضاف طبقة غير مُختبَرة وغير مُؤمَّنة، وفيه عيب واحد يُسقط العملية بالكامل،
   وأصبح لدينا <b>ثلاثة مصادر حقيقة متراكبة</b> (Room المحلي، Supabase للمحتوى، Prisma للخادم) لا تتوافق مخططاتها.
@@ -171,7 +171,7 @@
   <div class="card p0"><div class="num">6</div><div class="lbl">مشاكل حرجة (P0) توقف الإطلاق</div></div>
   <div class="card p1"><div class="num">9</div><div class="lbl">مشاكل عالية (P1) تُضعف الأمان/الثقة</div></div>
   <div class="card acc"><div class="num">7</div><div class="lbl">مشاكل متوسطة (P2)</div></div>
-  <div class="card ok"><div class="num">2</div><div class="lbl">تحقّقات تجريبية أُجريت فعليًا</div></div>
+  <div class="card ok"><div class="num">3</div><div class="lbl">تحقّقات تجريبية أُجريت فعليًا</div></div>
 </div>
 
 <div class="tbl-wrap">
@@ -189,6 +189,7 @@
     <tr><td>جودة وتغطية الاختبارات</td><td><span class="badge p1">عالي</span></td><td>اختبار منطق التصحيح ممتاز، لكن الباقي اختبارات سقالة، ولا اختبارات للخادم، ولا CI.</td></tr>
     <tr><td>التدويل و RTL</td><td><span class="badge ok">جيد</span></td><td>سلاسل مستخرجة و<code>values-ar</code>/<code>values-de</code>؛ تحتاج مراجعة RTL على جهاز حقيقي.</td></tr>
     <tr><td>الصدق في العروض</td><td><span class="badge ok">جيد</span></td><td>درجة النطق المزيّفة أُزيلت، ورمز RECORD_AUDIO حُذف، ولوحة الصدارة مُعلَّمة «محاكاة».</td></tr>
+    <tr><td>مزوّدو الذكاء الاصطناعي</td><td><span class="badge ok">أُنجز</span></td><td>ثلاثة مزوّدين خلف واجهة واحدة (Gemini · Groq · OpenCode Zen) مع تحويل تلقائي ومهلة صريحة — التفاصيل في القسم 13.</td></tr>
   </tbody>
 </table>
 </div>
@@ -253,6 +254,11 @@ Node.js v24.19.0      &lt;-- العملية انتهت، ولم يصل الطل�
       <li>أو الترقية إلى Express 5 (يعالج الرفض غير المتزامن أصلًا) — مع فحص تبعات النقل.</li>
       <li>وحدّ أخير للأمان: <code>process.on('unhandledRejection')</code> و<code>uncaughtException</code> مع تسجيل ثم خروج مُرتَّب.</li>
     </ul>
+  </div>
+  <div class="note" style="margin-top:10px">
+    <b>الحالة الآن:</b> التوصية الأولى نُفِّذت جزئيًا — أُضيف <code>backend/src/utils/asyncHandler.ts</code> وطُبِّق على مسارات
+    <code>/api/ai/*</code>، فأصبح فشل مزوّد الذكاء يُعاد كـ<code>502</code>/<code>503</code> بدل إسقاط العملية (القسم 13).
+    بقية ملفات المسارات (auth · user · lesson · vocabulary · language) لم تُغلَّف بعد، <b>فالبند ما زال مفتوحًا</b>.
   </div>
 </div>
 
@@ -651,7 +657,7 @@ val writingScore: Int = 75,</code></pre>
   <li><b>تنقّل رسمي:</b> <code>NavHost</code> بمكدّس رجوع حقيقي ومسارات مُحدَّدة وحماية مسار الإدارة بـ<code>BuildConfig.DEBUG</code>.</li>
   <li><b>الاستمرارية:</b> الثيم وسرعة الصوت في DataStore مع معالجة ملف تفضيلات تالف.</li>
   <li><b>صدق تدريجي:</b> إزالة درجة النطق المزيّفة، وحذف إذن غير مستخدم، وتسمية لوحة الصدارة «محاكاة» صراحة.</li>
-  <li><b>إخفاء المفتاح:</b> مفتاح Gemini لم يعد داخل الحزمة؛ الوسيط يقرأه من بيئة الخادم مع سقف يومي لكل مستدعٍ.</li>
+  <li><b>إخفاء المفاتيح:</b> لم تبقَ أي مفاتيح مزوّدين داخل الحزمة؛ الوسيط يقرؤها من بيئة الخادم مع سقف يومي لكل مستدعٍ، ويوزّع الطلب على ثلاثة مزوّدين مع تحويل تلقائي.</li>
   <li><b>البناء:</b> Kotlin DSL وكتالوج إصدارات مركزي، وثبيت لغة الـJVM لحلّ مشكلة أرقام Room على أنظمة عربية، وتصدير مخطط Room مع هجرة موثّقة.</li>
 </ul>
 
@@ -661,10 +667,107 @@ cd backend
 npx tsc --noEmit                 # تحقق تصريف (نجح حاليًا)
 npx prisma migrate dev --name init   # المرحلة A: أول هجرة مُلتزَمة
 
+# حالة مزوّدي الذكاء (بلا كشف أي مفتاح)
+curl -s http://localhost:3000/api/ai/providers -H "X-App-Token: $APP_TOKEN"
+
 # تطبيق أندرويد
 ./gradlew :app:testDebugUnitTest     # اختبارات الوحدة
 ./gradlew :app:assembleDebug         # بناء سريع
 ./gradlew :app:assembleRelease       # يتحقق من التصغير وقواعد ProGuard</code></pre>
+
+<h2>13. طبقة مزوّدي الذكاء — Gemini + Groq + OpenCode Zen <span class="badge ok">مُنجَز</span></h2>
+
+<p>
+  كان المسار يذهب مباشرة من <code>ai.controller.ts</code> إلى <code>generateContent</code> في Gemini، أي أن نفاد الطبقة المجانية
+  أو تعطّل المزوّد كان يعني تعطّل ميزة المعلّم الذكي بالكامل. الآن خلف نفس الواجهة ثلاثة مزوّدين، والطلب يُخدَم من أول مزوّد مضبوط يستجيب
+  مع تحويل تلقائي إلى التالي عند أي فشل (نفاد حصة، مفتاح خاطئ، مهلة، ردّ فارغ). لم يتغيّر شيء في التطبيق: الشكل الظاهر لـ<code>/api/ai/chat</code>
+  و<code>/api/ai/write</code> كما هو.
+</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>المزوّد</th><th>المعرّف</th><th>واجهة النداء</th><th>النموذج الافتراضي</th><th>ملاحظات</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Google Gemini</td><td><code>gemini</code></td>
+      <td>واجهة Gemini الأصلية <code>/v1beta/models/&lt;model&gt;:generateContent</code></td>
+      <td><code>gemini-2.5-flash</code></td>
+      <td>يبقى الأول في السلسلة. mapper يحوّل دور <code>assistant</code> إلى <code>model</code> ويضع system prompt خارج المحتوى.</td>
+    </tr>
+    <tr>
+      <td>Groq</td><td><code>groq</code></td>
+      <td>متوافق مع OpenAI: <code>POST https://api.groq.com/openai/v1/chat/completions</code></td>
+      <td><code>openai/gpt-oss-120b</code></td>
+      <td>استدلال سريع جدًا. الطبقة مجانية دون بطاقة، ولوحة Groq تُظهر حدوداً لكل نموذج (وثائق Groq تذكر لنموذج <code>gpt-oss-120b</code> حدوداً بالدقيقة/الشهر على خطة المطوّر — تُقرأ من لوحة التحكّم لا من الافتراض).</td>
+    </tr>
+    <tr>
+      <td>OpenCode Zen</td><td><code>zen</code></td>
+      <td>متوافق مع OpenAI: <code>POST https://opencode.ai/zen/v1/chat/completions</code></td>
+      <td><code>deepseek-v4-flash</code></td>
+      <td><b>فخّ يجب الانتباه له:</b> Zen بوابة تُقدّم لكل عائلة نماذج واجهة مختلفة (<code>/chat/completions</code> لـDeepSeek وGLM وKimi وMiniMax، و<code>/messages</code> لـClaude وQwen، و<code>/responses</code> لـGPT وGrok). لذلك يجب اختيار نموذج من العائلات المخدومة على <code>/chat/completions</code>، وإلا فشل الطلب وسقط للاحتياطي.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>كيف يعمل التسلسل</h3>
+<pre><code>AI_PROVIDER_ORDER="gemini,groq,zen"
+
+مهلة صريحة لكل مزوّد: AI_REQUEST_TIMEOUT_MS=25000
+
+المزوّدون بلا مفتاح يُستبعدون تلقائيًا (isConfigured)
+  ↓
+كل مزوّد يحاول → فشل/ردّ فارغ → يُسجَّل ويمرّر للاحتياطي
+  ↓
+إذا فشل الجميع:  429 إن كانت كل الأعطال "نفاد حصة"، وإلا 502 تفصيلي
+إذا لم يُضبط أي مفتاح: 503 "AI service is not configured on the server"</code></pre>
+
+<ul class="plain">
+  <li><b>المهلة:</b> <code>AI_REQUEST_TIMEOUT_MS</code> مع <code>AbortController</code> — مزوّد معلّق لم يعد قادرًا على تجميد الطلب.</li>
+  <li><b>رصد حقيقي:</b> كل محاولة تُسجَّل في الخادم (<code>[ai] "groq" failed (429): …</code>)، وعند الانتقال للاحتياطي يُسجَّل معرّفه — فالمعرفة بأي مزوّد خدم الطلب لم تعد تخمينًا.</li>
+  <li><b>الحماية من إسقاط العملية (B1):</b> أُضيف <code>backend/src/utils/asyncHandler.ts</code> وطُبّق على مسارات <code>/api/ai/*</code>، بعد أن كان خطأ من متحكّم غير متزامن يُنهي العملية كلها. البقية لم تُغلَّف بعد — البند B1 ما زال مفتوحًا جزئيًا.</li>
+</ul>
+
+<h3>الملفات المُضافة أو المعدَّلة</h3>
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>الملف</th><th>الحالة</th><th>الدور</th></tr></thead>
+  <tbody>
+    <tr><td><code>backend/src/ai/types.ts</code></td><td>جديد</td><td>عقد واحد <code>AiProvider</code> (id، label، model، isConfigured، generate) + أنماط الطلب والنتيجة.</td></tr>
+    <tr><td><code>backend/src/ai/providers/gemini.ts</code></td><td>جديد</td><td>نقل منطق Gemini كما هو (بما فيه تمييز 429) إلى تنفيذ للعقد.</td></tr>
+    <tr><td><code>backend/src/ai/providers/openAiCompatible.ts</code></td><td>جديد</td><td>مصنع واحد يخدم أي بوابة بنمط OpenAI — يُستخدم مع Groq وZen معًا بدل تكرار الكود مرتين.</td></tr>
+    <tr><td><code>backend/src/ai/gateway.ts</code></td><td>جديد</td><td>سجل المزوّدين، قراءة <code>AI_PROVIDER_ORDER</code>، المهلة، والتسلسل الاحتياطي.</td></tr>
+    <tr><td><code>backend/src/utils/asyncHandler.ts</code></td><td>جديد</td><td>تمرير الرفض غير المتزامن إلى <code>errorHandler</code> بدل إسقاط العملية.</td></tr>
+    <tr><td><code>backend/src/controllers/ai.controller.ts</code></td><td>معدَّل</td><td>يستدعي <code>generateText</code> بدل <code>callGemini</code>؛ منطق تحليل <code>REPLY:/SCORE:</code> لم يُلمس.</td></tr>
+    <tr><td><code>backend/src/routes/ai.routes.ts</code></td><td>معدَّل</td><td>تغليف المتحكّمات، وإضافة <code>GET /api/ai/providers</code> لتقرير المزوّدين المضبوطين وترتيبهم (بلا كشف أي مفتاح).</td></tr>
+    <tr><td><code>backend/src/config/env.ts</code> · <code>backend/.env.example</code></td><td>معدَّل</td><td>مفاتيح ونماذج المزوّدين الجدد، والترتيب، والمهلة.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>التحقّق المنفَّذ فعليًا</h3>
+<pre><code>npx tsc --noEmit                                             → نجح
+اختبار تحويل تلقائي بعميل fetch مُستبدَل:
+  Gemini 429 → Groq 500 → Zen 200   → الخدمة من Zen، وكل المحاولات مسجَّلة  ✔
+  Gemini 200                        → الخدمة من Gemini بلا نداء احتياطي   ✔
+  429 على الجميع                    → 429 وليس 502                        ✔
+  400/429/500 مختلطة                → 502 (لا ادّعاء كاذب بنفاد الحصة)     ✔
+  بلا أي مفتاح عبر Express          → 503 يمرّ من errorHandler دون إسقاط  ✔</code></pre>
+
+<h3>ما تبقّى في هذا البند</h3>
+<ul class="plain">
+  <li><b>إعادة محاولة واحدة</b> قبل الانتقال للمزوّد التالي — حاليًا كل فشل عابر (شبكة) يستهلك مزوّدًا كاملًا من السلسلة.</li>
+  <li><b>حَقن المزوّد كمُعامَل</b> بدل قراءة <code>process.env</code> عند تحميل الوحدة، ليمكن اختبار الـGateway بمزوّدات وهمية داخل CI.</li>
+  <li><b>تسجيل استهلاك لكل مزوّد</b> (عدد الطلبات والنِسَب المقروءة من الرؤوس) لمعرفة متى يقترب السقف المجاني قبل أن يُصطدم به.</li>
+  <li><b>تعميم <code>asyncHandler</code></b> على كل ملفات المسارات، لا مسارات الذكاء وحدها.</li>
+  <li><b>إخراج JSON مُهيَّكل</b> (البند B10) — وقد صار أنسب الآن لأن نماذج Groq وZen تدعم أوضاع JSON المُهيكل أيضًا.</li>
+</ul>
+
+<div class="note">
+  <b>قاعدة تشغيلية:</b> أضف المفاتيح بالتتابع حسب الميزانية — <code>gemini</code> أولًا (طبقة مجانية)، ثم <code>groq</code> كاحتياطي مجاني سريع،
+  ثم <code>zen</code> كاحتياطي مدفوع بالاستخدام عند الحاجة. وأبقِ <code>AI_DAILY_REQUEST_CAP</code> منخفضًا في البداية:
+  سقف أخطاء المزوّدين تحوّل من «إسقاط الخدمة» إلى «سطر في السجل»، لكنه ما زال قابلًا لاستنزاف ميزانيتك.
+</div>
 
 <footer>
   أُعِدّ هذا التقرير بفحص شيفرة المستودع مع تحقّق تجريبي محدود (تصريف الباك-إند، وسلوك Express مع الدوال غير المتزامنة، ووجود هجرات قاعدة البيانات).
