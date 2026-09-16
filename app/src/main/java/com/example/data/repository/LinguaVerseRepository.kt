@@ -1,14 +1,23 @@
 package com.example.data.repository
 
+import android.util.Log
 import com.example.ai.AiTeacherReply
 import com.example.data.db.LinguaVerseDao
 import com.example.data.model.*
-import kotlinx.coroutines.flow.Flow
+import com.example.data.remote.RemoteAchievement
+import com.example.data.remote.RemoteExercise
+import com.example.data.remote.RemoteFlashcard
+import com.example.data.remote.RemoteGrammarRule
+import com.example.data.remote.RemoteLanguage
+import com.example.data.remote.RemoteLesson
+import com.example.data.remote.RemoteVocabulary
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import kotlinx.coroutines.flow.Flow
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.IOException
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class LinguaVerseRepository(
     private val dao: LinguaVerseDao
@@ -32,18 +41,21 @@ class LinguaVerseRepository(
 
     suspend fun getExercisesForLesson(lessonId: String): List<Exercise> = dao.getExercisesForLesson(lessonId)
     suspend fun getLessonById(lessonId: String): Lesson? = dao.getLessonById(lessonId)
+    suspend fun getAllLessonsOnce(): List<Lesson> = dao.getAllLessonsOnce()
+    suspend fun getAllVocabulariesOnce(): List<Vocabulary> = dao.getAllVocabulariesOnce()
+    suspend fun getAllAchievementsOnce(): List<Achievement> = dao.getAllAchievementsOnce()
 
     private val moshi = Moshi.Builder().build()
 
     private fun callBackend(endpoint: String): List<Any?>? {
-        try {
+        return runCatching {
             val client = OkHttpClient()
             val request = Request.Builder().url("$BACKEND_BASE_URL$endpoint").build()
             val response = client.newCall(request).execute()
-            if (!response.isSuccessful) return null
-            val json = response.body?.string()
-            if (json.isBlank()) return null
-            val type = com.squareup.moshi.Types.newParameterizedType(
+            if (!response.isSuccessful) return@runCatching null
+            val json = response.body?.string() ?: ""
+            if (json.isBlank()) return@runCatching null
+            val type = Types.newParameterizedType(
                 java.util.List::class.java,
                 when (endpoint) {
                     "/languages" -> RemoteLanguage::class.java
@@ -56,12 +68,8 @@ class LinguaVerseRepository(
                     else -> java.util.List::class.java
                 }
             )
-            val result: List<Any?> = moshi.adapter(type).fromJson(json)
-            return result
-        } catch (e: IOException) {
-            Log.w("Repo", "Backend call failed: ${e.message}")
-            null
-        }
+            moshi.adapter<List<Any?>>(type).fromJson(json)
+        }.onFailure { e -> Log.w("Repo", "Backend call failed: ${e.message}") }.getOrNull()
     }
 
     suspend fun syncPublicContent(dao: LinguaVerseDao): Boolean {
@@ -97,7 +105,25 @@ class LinguaVerseRepository(
         }
     }
 
-suspend fun completeLesson(lessonId: String, xpEarned: Int, authToken: String?) {
+    suspend fun initializeSeedData() {
+        if (dao.countLanguages() == 0) {
+            dao.insertLanguages(
+                listOf(
+                    Language(code = "es", name = "Spanish", nativeName = "Español", flagEmoji = "🇪🇸"),
+                    Language(code = "ar", name = "Arabic", nativeName = "العربية", flagEmoji = "🇸🇦")
+                )
+            )
+        }
+        if (dao.getUserProfileOnce() == null) {
+            dao.insertOrUpdateProfile(UserProfile())
+        }
+    }
+
+    suspend fun toggleFavoriteVocab(vocabulary: Vocabulary) {
+        dao.updateVocabulary(vocabulary.copy(isFavorite = !vocabulary.isFavorite))
+    }
+
+    suspend fun completeLesson(lessonId: String, xpEarned: Int, authToken: String? = null) {
         val lesson = dao.getLessonById(lessonId) ?: return
 
         // Don't allow replaying a finished lesson to farm XP
@@ -134,7 +160,7 @@ suspend fun completeLesson(lessonId: String, xpEarned: Int, authToken: String?) 
                 val request = Request.Builder()
                     .url("$BACKEND_BASE_URL/users/me/progress")
                     .header("Authorization", "Bearer $token")
-                    .put(RequestBody.create(payload, okhttp3.MediaType.get("application/json")))
+                    .put(payload.toRequestBody("application/json".toMediaType()))
                     .build()
 
                 val response = client.newCall(request).execute()
@@ -156,4 +182,35 @@ suspend fun completeLesson(lessonId: String, xpEarned: Int, authToken: String?) 
         flashcards = dao.countFlashcards(),
         completedLessons = dao.countCompletedLessons()
     )
+
+    suspend fun addCustomLanguage(language: Language) {
+        dao.insertLanguage(language)
+    }
+
+    suspend fun addCustomLesson(lesson: Lesson, exercises: List<Exercise>) {
+        dao.insertLesson(lesson)
+        dao.insertExercises(exercises)
+    }
+
+    suspend fun addCustomVocabulary(vocabulary: Vocabulary) {
+        dao.insertVocabulary(vocabulary)
+    }
+
+    suspend fun sendChatMessage(userMessage: String, reply: AiTeacherReply) {
+        dao.insertChatMessage(ChatMessage(sender = "user", text = userMessage))
+        dao.insertChatMessage(
+            ChatMessage(
+                sender = "tutor",
+                text = reply.replyText,
+                correction = reply.correction,
+                suggestion = reply.suggestion,
+                grammarExplanation = reply.grammarExplanation
+            )
+        )
+    }
+
+    suspend fun updateTargetLanguage(langCode: String) {
+        val profile = dao.getUserProfileOnce() ?: return
+        dao.updateProfile(profile.copy(targetLanguageCode = langCode))
+    }
 }

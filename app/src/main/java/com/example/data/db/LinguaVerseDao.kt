@@ -33,7 +33,7 @@ interface LinguaVerseDao {
     @Query("SELECT * FROM user_profile WHERE id = 'user_default'")
     suspend fun getUserProfileOnce(): UserProfile?
 
-    @Insert(onConflict = OnConflictStrategy.UPDATE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateProfile(profile: UserProfile)
 
     @Update

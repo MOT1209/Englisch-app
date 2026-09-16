@@ -1,43 +1,28 @@
+import { prisma } from '../config/database';
 import { env } from '../config/env';
-
-interface Usage {
-  day: string;
-  count: number;
-}
-
-/**
- * In-memory per-caller daily budget for AI calls.
- *
- * The free Gemini tier is small and the key lives server-side now, so a leaked
- * endpoint could still burn the project's quota. This map caps each caller
- * (device id when the app provides one, otherwise IP) at a configurable number
- * of requests per calendar day. Good enough for a single instance and for the
- * current anonymous app; when accounts arrive, key by userId instead.
- */
-const usage = new Map<string, Usage>();
 
 function todayKey(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-/** Returns true when the caller still has daily budget left. */
-export function consumeAiQuota(deviceId: string | null, ip: string): boolean {
-  const key = deviceId?.trim() || ip;
-  const today = todayKey();
+/**
+ * Per-caller daily budget for AI calls, stored in Postgres.
+ *
+ * The old version kept a `Map` in process memory: a redeploy silently reset
+ * every caller's budget to zero, and with more than one instance each process
+ * enforced its own separate ceiling. Persisting the counters in the `ai_usage`
+ * table makes the cap real across restarts and instances, and the unique
+ * `(callerId, day)` key makes the upsert an atomic increment.
+ */
+export async function consumeAiQuota(deviceId: string | null, ip: string): Promise<boolean> {
+  const callerId = (deviceId?.trim() || ip || 'unknown').slice(0, 200);
+  const day = todayKey();
 
-  // Cheap GC so the map cannot grow without bound.
-  if (usage.size > 10_000) {
-    for (const [k, v] of usage) {
-      if (v.day !== today) usage.delete(k);
-    }
-  }
+  const record = await prisma.aiUsage.upsert({
+    where: { callerId_day: { callerId, day } },
+    update: { count: { increment: 1 } },
+    create: { callerId, day, count: 1 },
+  });
 
-  const current = usage.get(key);
-  if (!current || current.day !== today) {
-    usage.set(key, { day: today, count: 1 });
-    return true;
-  }
-  if (current.count >= env.AI_DAILY_REQUEST_CAP) return false;
-  current.count += 1;
-  return true;
+  return record.count <= env.AI_DAILY_REQUEST_CAP;
 }

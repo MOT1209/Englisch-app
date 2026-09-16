@@ -35,7 +35,12 @@ const envSchema = z.object({
   OPENCODE_ZEN_MODEL: z.string().default('deepseek-v4-flash'),
   OPENCODE_ZEN_BASE_URL: z.string().default('https://opencode.ai/zen/v1'),
 
+  // Firebase App Check. When set, the AI proxy requires a verified App Check
+  // token in `X-Firebase-AppCheck` and stops accepting the shared APP_TOKEN.
+  FIREBASE_APP_CHECK_PROJECT_NUMBER: z.string().trim().max(100).optional(),
+
   // Shared secret the Android app sends in `X-App-Token` to reach the AI proxy.
+  // Only accepted while FIREBASE_APP_CHECK_PROJECT_NUMBER is NOT set.
   APP_TOKEN: z.string().min(8).default('change-me-strong-app-token'),
   // Per-caller daily ceiling for AI calls (the free tier shrinks; abuse burns money).
   AI_DAILY_REQUEST_CAP: z.coerce.number().int().positive().default(300),

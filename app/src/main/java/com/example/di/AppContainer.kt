@@ -2,12 +2,17 @@ package com.example.di
 
 import android.content.Context
 import com.example.ai.AiOutcome
+import com.example.ai.AiTeacherReply
 import com.example.audio.TtsManager
 import com.example.data.db.AppDatabase
+import com.example.data.model.*
 import com.example.data.prefs.UserPreferencesRepository
 import com.example.data.repository.LinguaVerseRepository
 import com.example.domain.AiTutor
 import com.example.domain.ContentRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 /**
  * Manual dependency container (constructor injection, no DI framework).
@@ -42,7 +47,7 @@ class AppContainer(context: Context) {
             targetLanguage: String,
             cefrLevel: CefrLevel,
             chatHistory: List<ChatMessage>
-        ): AiOutcome<AiTeacherReply> = withContext(java.util.concurrent.Dispatchers.IO) {
+        ): AiOutcome<AiTeacherReply> = withContext(Dispatchers.IO) {
             // TODO: Implement actual AI chat via Gemini API proxy
             AiOutcome.Failure(com.example.ai.AiFailure.NOT_CONFIGURED)
         }
@@ -51,7 +56,7 @@ class AppContainer(context: Context) {
             userText: String,
             prompt: String,
             targetLanguage: String
-        ): AiOutcome<AiTutor.WritingEvaluationResult> = withContext(java.util.concurrent.Dispatchers.IO) {
+        ): AiOutcome<AiTutor.WritingEvaluationResult> = withContext(Dispatchers.IO) {
             // TODO: Implement actual writing evaluation via Gemini API proxy
             AiOutcome.Failure(com.example.ai.AiFailure.NOT_CONFIGURED)
         }
@@ -70,29 +75,26 @@ class AppContainer(context: Context) {
         override val chatMessages: Flow<List<ChatMessage>>
             get() = repository.chatMessages
 
-        override fun getLessonsByLanguage(langCode: String): Flow<List<Lesson>>
-            get() = repository.getLessonsByLanguage(langCode)
+        override fun getLessonsByLanguage(langCode: String): Flow<List<Lesson>> =
+            repository.getLessonsByLanguage(langCode)
 
-        override fun getVocabularies(langCode: String): Flow<List<Vocabulary>>
-            get() = repository.getVocabularies(langCode)
+        override fun getVocabularies(langCode: String): Flow<List<Vocabulary>> =
+            repository.getVocabularies(langCode)
 
-        override fun getFavoriteVocabularies(langCode: String): Flow<List<Vocabulary>>
-            get() = repository.getFavoriteVocabularies(langCode)
+        override fun getFavoriteVocabularies(langCode: String): Flow<List<Vocabulary>> =
+            repository.getFavoriteVocabularies(langCode)
 
-        override fun getGrammarRules(langCode: String): Flow<List<GrammarRule>>
-            get() = repository.getGrammarRules(langCode)
+        override fun getGrammarRules(langCode: String): Flow<List<GrammarRule>> =
+            repository.getGrammarRules(langCode)
 
-        override fun getFlashcards(langCode: String): Flow<List<Flashcard>>
-            get() = repository.getFlashcards(langCode)
+        override fun getFlashcards(langCode: String): Flow<List<Flashcard>> =
+            repository.getFlashcards(langCode)
 
-        override fun getAllLessonsOnce(): List<Lesson>
-            get() = repository.getAllLessonsOnce()
+        override suspend fun getAllLessonsOnce(): List<Lesson> = repository.getAllLessonsOnce()
 
-        override fun getAllVocabulariesOnce(): List<Vocabulary>
-            get() = repository.getAllVocabulariesOnce()
+        override suspend fun getAllVocabulariesOnce(): List<Vocabulary> = repository.getAllVocabulariesOnce()
 
-        override fun getAllAchievementsOnce(): List<Achievement>
-            get() = repository.getAllAchievementsOnce()
+        override suspend fun getAllAchievementsOnce(): List<Achievement> = repository.getAllAchievementsOnce()
 
         override suspend fun initializeSeedData() {
             repository.initializeSeedData()

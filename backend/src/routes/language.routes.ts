@@ -1,4 +1,7 @@
 import { Router } from 'express';
+import { authenticate } from '../middleware/auth';
+import { validate } from '../middleware/validate';
+import { createLanguageSchema } from '../validators/lesson.validator';
 import {
   getAllLanguages,
   getLanguageByCode,
@@ -27,9 +30,10 @@ const router = Router();
 
 // Languages
 router.get('/', getAllLanguages);
-router.get('/:code', getLanguageByCode);
-router.get('/:code/levels', getLanguageLevels);
-// P1: Remote content endpoints (replaces SupabaseContentDataSource)
+
+// P1: Remote content endpoints (replaces SupabaseContentDataSource). These must
+// be declared before `/:code`, otherwise `remote` matches the language-code
+// catch-all and every `/remote/...` path 404s.
 router.get('/remote/languages', getRemoteLanguages);
 router.get('/remote/lessons', getRemoteLessons);
 router.get('/remote/exercises', getRemoteExercises);
@@ -44,6 +48,9 @@ router.get('/remote/vocabularies/:langCode', getRemoteVocabulariesByLanguage);
 router.get('/remote/grammar-rules/:langCode', getRemoteGrammarRulesByLanguage);
 router.get('/remote/flashcards/:langCode', getRemoteFlashcardsByLanguage);
 router.get('/remote/achievements/:langCode', getRemoteAchievementsByLanguage);
+
+router.get('/:code', getLanguageByCode);
+router.get('/:code/levels', getLanguageLevels);
 
 router.post('/', authenticate, validate(createLanguageSchema), createLanguage);
 router.put('/:code', authenticate, updateLanguage);

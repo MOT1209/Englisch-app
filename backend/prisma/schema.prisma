@@ -407,3 +407,20 @@ model ChatMessage {
   @@index([userId, languageId, createdAt(sort: Desc)])
   @@map("chat_messages")
 }
+
+// ============================================================
+// AI USAGE QUOTA (shared counter, not per-process memory)
+// ============================================================
+
+model AiUsage {
+  id        String   @id @default(uuid()) @db.Uuid
+  callerId  String   @map("caller_id") @db.VarChar(200) // device id, else IP
+  day       String   @db.VarChar(10) // YYYY-MM-DD (UTC)
+  count     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([callerId, day])
+  @@index([day])
+  @@map("ai_usage")
+}

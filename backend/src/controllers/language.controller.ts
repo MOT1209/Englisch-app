@@ -59,20 +59,30 @@ export async function deleteLanguage(req: Request, res: Response): Promise<void>
   res.json({ success: true, message: 'Language deleted' });
 }
 
+// ============================================================
+// Remote content endpoints. These serve the Android app's catalog DTOs
+// (SupabaseContentApi.kt): prepare your results with `code`|`name` columns in
+// mind, so the app receives `language_code`/`native_name`/etc. without seeing
+// relational ids or internal columns. Values the schema does not store but the
+// app needs (e.g. `is_default`, `description`, per-user progress) are derived
+// deterministically or left to the app's defaults.
+// ============================================================
+
 export async function getRemoteLanguages(_req: Request, res: Response): Promise<void> {
   const languages = await prisma.language.findMany({
     where: { status: 'active' },
     orderBy: { name: 'asc' },
+    include: { _count: { select: { lessons: true } } },
   });
 
   const remoteLanguages = languages.map((lang) => ({
     code: lang.code,
     name: lang.name,
-    nativeName: lang.nativeName,
-    flagEmoji: lang.flagEmoji,
-    isDefault: lang.isDefault,
-    totalLessonsCount: lang.totalLessonsCount,
-    description: lang.description,
+    native_name: lang.nativeName,
+    flag_emoji: lang.flagEmoji ?? '',
+    is_default: lang.code === 'en',
+    total_lessons_count: lang._count.lessons,
+    description: '',
   }));
 
   res.json({ success: true, data: remoteLanguages });
@@ -81,24 +91,20 @@ export async function getRemoteLanguages(_req: Request, res: Response): Promise<
 export async function getRemoteLessons(_req: Request, res: Response): Promise<void> {
   const lessons = await prisma.lesson.findMany({
     where: { isPublished: true },
-    include: {
-      exercises: true,
-      grammarRules: true,
-    },
+    include: { language: true, level: true },
     orderBy: { orderIndex: 'asc' },
   });
 
   const remoteLessons = lessons.map((lesson) => ({
     id: lesson.id,
-    languageCode: lesson.languageCode,
+    language_code: lesson.language.code,
     level: lesson.level.code,
     title: lesson.title,
-    description: lesson.description,
-    category: lesson.category,
-    xpReward: lesson.xpReward,
-    isCompleted: lesson.isCompleted,
-    isLocked: lesson.isLocked,
-    orderIndex: lesson.orderIndex,
+    description: lesson.description ?? '',
+    category: lesson.category ?? '',
+    xp_reward: lesson.xpReward,
+    is_locked: false,
+    order_index: lesson.orderIndex,
   }));
 
   res.json({ success: true, data: remoteLessons });
@@ -107,26 +113,28 @@ export async function getRemoteLessons(_req: Request, res: Response): Promise<vo
 export async function getRemoteExercises(_req: Request, res: Response): Promise<void> {
   const exercises = await prisma.exercise.findMany({
     where: { isPublished: true },
-    include: {
-      lesson: true,
-    },
-    orderBy: { orderIndex: 'asc' },
+    orderBy: { sortOrder: 'asc' },
   });
 
   const remoteExercises = exercises.map((ex) => ({
     id: ex.id,
-    lessonId: ex.lessonId,
+    lesson_id: ex.lessonId,
     type: ex.type,
     prompt: ex.prompt,
-    targetText: ex.targetText,
-    translation: ex.translation,
-    optionsJson: ex.optionsJson,
-    correctAnswer: ex.correctAnswer,
-    audioUrl: ex.audioUrl,
-    phoneticText: ex.phoneticText,
+    target_text: ex.targetText,
+    translation: '',
+    options_json:
+      ex.optionsJson == null || ex.optionsJson === ''
+        ? '[]'
+        : typeof ex.optionsJson === 'string'
+          ? ex.optionsJson
+          : JSON.stringify(ex.optionsJson),
+    correct_answer: ex.correctAnswer,
+    audio_url: ex.audioUrl ?? '',
+    phonetic_text: ex.phoneticText,
     explanation: ex.explanation,
-    passageText: ex.passageText,
-    imageResName: ex.imageResName,
+    passage_text: ex.passageText ?? '',
+    image_res_name: ex.imageUrl ?? '',
   }));
 
   res.json({ success: true, data: remoteExercises });
@@ -134,21 +142,19 @@ export async function getRemoteExercises(_req: Request, res: Response): Promise<
 
 export async function getRemoteVocabularies(_req: Request, res: Response): Promise<void> {
   const vocabularies = await prisma.vocabulary.findMany({
-    where: { isFavorite: false },
+    include: { language: true },
     orderBy: { word: 'asc' },
   });
 
   const remoteVocabularies = vocabularies.map((vocab) => ({
     id: vocab.id,
-    languageCode: vocab.languageCode,
+    language_code: vocab.language.code,
     word: vocab.word,
     translation: vocab.translation,
-    exampleSentence: vocab.exampleSentence,
-    exampleTranslation: vocab.exampleTranslation,
+    example_sentence: vocab.exampleSentence ?? '',
+    example_translation: vocab.exampleTranslation ?? '',
     phonetic: vocab.phonetic,
     category: vocab.category,
-    isFavorite: vocab.isFavorite,
-    needsReview: vocab.needsReview,
   }));
 
   res.json({ success: true, data: remoteVocabularies });
@@ -156,19 +162,19 @@ export async function getRemoteVocabularies(_req: Request, res: Response): Promi
 
 export async function getRemoteGrammarRules(_req: Request, res: Response): Promise<void> {
   const rules = await prisma.grammarRule.findMany({
-    where: { isPublished: true },
+    include: { language: true, level: true },
     orderBy: { title: 'asc' },
   });
 
   const remoteGrammarRules = rules.map((rule) => ({
     id: rule.id,
-    languageCode: rule.languageCode,
+    language_code: rule.language.code,
     level: rule.level.code,
     title: rule.title,
     summary: rule.summary,
-    fullRuleText: rule.fullRuleText,
-    exampleSentence: rule.exampleSentence,
-    exampleTranslation: rule.exampleTranslation,
+    full_rule_text: rule.fullRuleText,
+    example_sentence: rule.exampleSentence ?? '',
+    example_translation: rule.exampleTranslation ?? '',
   }));
 
   res.json({ success: true, data: remoteGrammarRules });
@@ -177,18 +183,18 @@ export async function getRemoteGrammarRules(_req: Request, res: Response): Promi
 export async function getRemoteFlashcards(_req: Request, res: Response): Promise<void> {
   const flashcards = await prisma.flashcard.findMany({
     where: { isMastered: false },
+    include: { language: true },
     orderBy: { id: 'asc' },
   });
 
   const remoteFlashcards = flashcards.map((fc) => ({
     id: fc.id,
-    languageCode: fc.languageCode,
-    frontWord: fc.frontWord,
-    backTranslation: fc.backTranslation,
-    exampleSentence: fc.exampleSentence,
+    language_code: fc.language.code,
+    front_word: fc.frontWord,
+    back_translation: fc.backTranslation,
+    example_sentence: fc.exampleSentence ?? '',
     phonetic: fc.phonetic,
-    intervalDays: fc.intervalDays,
-    isMastered: fc.isMastered,
+    interval_days: fc.intervalDays,
   }));
 
   res.json({ success: true, data: remoteFlashcards });
@@ -196,19 +202,16 @@ export async function getRemoteFlashcards(_req: Request, res: Response): Promise
 
 export async function getRemoteAchievements(_req: Request, res: Response): Promise<void> {
   const achievements = await prisma.achievement.findMany({
-    where: { isUnlocked: false },
-    orderBy: { progress: 'asc' },
+    orderBy: { conditionValue: 'asc' },
   });
 
   const remoteAchievements = achievements.map((ach) => ({
     id: ach.id,
     title: ach.title,
     description: ach.description,
-    iconName: ach.iconName,
-    isUnlocked: ach.isUnlocked,
-    progress: ach.progress,
-    maxProgress: ach.maxProgress,
-    rewardXp: ach.rewardXp,
+    icon_name: ach.iconName ?? '',
+    max_progress: ach.conditionValue,
+    reward_xp: ach.rewardXp,
   }));
 
   res.json({ success: true, data: remoteAchievements });
@@ -218,27 +221,26 @@ export async function getRemoteLessonsByLanguage(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { langCode } = req.params;
+  const langCode = String(req.params.langCode);
+  const language = await prisma.language.findUnique({ where: { code: langCode } });
+  if (!language) throw new NotFoundError('Language');
+
   const lessons = await prisma.lesson.findMany({
-    where: { languageCode: langCode, isPublished: true },
-    include: {
-      exercises: true,
-      grammarRules: true,
-    },
+    where: { languageId: language.id, isPublished: true },
+    include: { language: true, level: true },
     orderBy: { orderIndex: 'asc' },
   });
 
   const remoteLessons = lessons.map((lesson) => ({
     id: lesson.id,
-    languageCode: lesson.languageCode,
+    language_code: lesson.language.code,
     level: lesson.level.code,
     title: lesson.title,
-    description: lesson.description,
-    category: lesson.category,
-    xpReward: lesson.xpReward,
-    isCompleted: lesson.isCompleted,
-    isLocked: lesson.isLocked,
-    orderIndex: lesson.orderIndex,
+    description: lesson.description ?? '',
+    category: lesson.category ?? '',
+    xp_reward: lesson.xpReward,
+    is_locked: false,
+    order_index: lesson.orderIndex,
   }));
 
   res.json({ success: true, data: remoteLessons });
@@ -248,26 +250,34 @@ export async function getRemoteExercisesByLesson(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { lessonId } = req.params;
+  const lessonId = String(req.params.lessonId);
+  const lesson = await prisma.lesson.findUnique({ where: { id: lessonId } });
+  if (!lesson) throw new NotFoundError('Lesson');
+
   const exercises = await prisma.exercise.findMany({
     where: { lessonId, isPublished: true },
-    orderBy: { orderIndex: 'asc' },
+    orderBy: { sortOrder: 'asc' },
   });
 
   const remoteExercises = exercises.map((ex) => ({
     id: ex.id,
-    lessonId: ex.lessonId,
+    lesson_id: ex.lessonId,
     type: ex.type,
     prompt: ex.prompt,
-    targetText: ex.targetText,
-    translation: ex.translation,
-    optionsJson: ex.optionsJson,
-    correctAnswer: ex.correctAnswer,
-    audioUrl: ex.audioUrl,
-    phoneticText: ex.phoneticText,
+    target_text: ex.targetText,
+    translation: '',
+    options_json:
+      ex.optionsJson == null || ex.optionsJson === ''
+        ? '[]'
+        : typeof ex.optionsJson === 'string'
+          ? ex.optionsJson
+          : JSON.stringify(ex.optionsJson),
+    correct_answer: ex.correctAnswer,
+    audio_url: ex.audioUrl ?? '',
+    phonetic_text: ex.phoneticText,
     explanation: ex.explanation,
-    passageText: ex.passageText,
-    imageResName: ex.imageResName,
+    passage_text: ex.passageText ?? '',
+    image_res_name: ex.imageUrl ?? '',
   }));
 
   res.json({ success: true, data: remoteExercises });
@@ -277,23 +287,25 @@ export async function getRemoteVocabulariesByLanguage(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { langCode } = req.params;
+  const langCode = String(req.params.langCode);
+  const language = await prisma.language.findUnique({ where: { code: langCode } });
+  if (!language) throw new NotFoundError('Language');
+
   const vocabularies = await prisma.vocabulary.findMany({
-    where: { languageCode: langCode },
+    where: { languageId: language.id },
+    include: { language: true },
     orderBy: { word: 'asc' },
   });
 
   const remoteVocabularies = vocabularies.map((vocab) => ({
     id: vocab.id,
-    languageCode: vocab.languageCode,
+    language_code: vocab.language.code,
     word: vocab.word,
     translation: vocab.translation,
-    exampleSentence: vocab.exampleSentence,
-    exampleTranslation: vocab.exampleTranslation,
+    example_sentence: vocab.exampleSentence ?? '',
+    example_translation: vocab.exampleTranslation ?? '',
     phonetic: vocab.phonetic,
     category: vocab.category,
-    isFavorite: vocab.isFavorite,
-    needsReview: vocab.needsReview,
   }));
 
   res.json({ success: true, data: remoteVocabularies });
@@ -303,21 +315,25 @@ export async function getRemoteGrammarRulesByLanguage(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { langCode } = req.params;
+  const langCode = String(req.params.langCode);
+  const language = await prisma.language.findUnique({ where: { code: langCode } });
+  if (!language) throw new NotFoundError('Language');
+
   const rules = await prisma.grammarRule.findMany({
-    where: { languageCode: langCode, isPublished: true },
+    where: { languageId: language.id },
+    include: { language: true, level: true },
     orderBy: { title: 'asc' },
   });
 
   const remoteGrammarRules = rules.map((rule) => ({
     id: rule.id,
-    languageCode: rule.languageCode,
+    language_code: rule.language.code,
     level: rule.level.code,
     title: rule.title,
     summary: rule.summary,
-    fullRuleText: rule.fullRuleText,
-    exampleSentence: rule.exampleSentence,
-    exampleTranslation: rule.exampleTranslation,
+    full_rule_text: rule.fullRuleText,
+    example_sentence: rule.exampleSentence ?? '',
+    example_translation: rule.exampleTranslation ?? '',
   }));
 
   res.json({ success: true, data: remoteGrammarRules });
@@ -327,199 +343,44 @@ export async function getRemoteFlashcardsByLanguage(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { langCode } = req.params;
+  const langCode = String(req.params.langCode);
+  const language = await prisma.language.findUnique({ where: { code: langCode } });
+  if (!language) throw new NotFoundError('Language');
+
   const flashcards = await prisma.flashcard.findMany({
-    where: { languageCode: langCode },
+    where: { languageId: language.id },
+    include: { language: true },
     orderBy: { id: 'asc' },
   });
 
   const remoteFlashcards = flashcards.map((fc) => ({
     id: fc.id,
-    languageCode: fc.languageCode,
-    frontWord: fc.frontWord,
-    backTranslation: fc.backTranslation,
-    exampleSentence: fc.exampleSentence,
+    language_code: fc.language.code,
+    front_word: fc.frontWord,
+    back_translation: fc.backTranslation,
+    example_sentence: fc.exampleSentence ?? '',
     phonetic: fc.phonetic,
-    intervalDays: fc.intervalDays,
-    isMastered: fc.isMastered,
+    interval_days: fc.intervalDays,
   }));
 
   res.json({ success: true, data: remoteFlashcards });
 }
 
 export async function getRemoteAchievementsByLanguage(
-  req: Request,
+  _req: Request,
   res: Response
 ): Promise<void> {
-  const { langCode } = req.params;
   const achievements = await prisma.achievement.findMany({
-    orderBy: { progress: 'asc' },
+    orderBy: { conditionValue: 'asc' },
   });
 
   const remoteAchievements = achievements.map((ach) => ({
     id: ach.id,
     title: ach.title,
     description: ach.description,
-    iconName: ach.iconName,
-    isUnlocked: ach.isUnlocked,
-    progress: ach.progress,
-    maxProgress: ach.maxProgress,
-    rewardXp: ach.rewardXp,
-  }));
-
-  res.json({ success: true, data: remoteAchievements });
-}
-
-export async function getRemoteLanguages(): Promise<void> {
-  const languages = await prisma.language.findMany({
-    where: { status: 'active' },
-    orderBy: { name: 'asc' },
-  });
-
-  const remoteLanguages = languages.map((lang) => ({
-    code: lang.code,
-    name: lang.name,
-    nativeName: lang.nativeName,
-    flagEmoji: lang.flagEmoji,
-    isDefault: lang.isDefault,
-    totalLessonsCount: lang.totalLessonsCount,
-    description: lang.description,
-  }));
-
-  res.json({ success: true, data: remoteLanguages });
-}
-
-export async function getRemoteLessons(): Promise<void> {
-  const lessons = await prisma.lesson.findMany({
-    where: { isPublished: true },
-    include: {
-      exercises: true,
-      grammarRules: true,
-    },
-    orderBy: { orderIndex: 'asc' },
-  });
-
-  const remoteLessons = lessons.map((lesson) => ({
-    id: lesson.id,
-    languageCode: lesson.languageCode,
-    level: lesson.level.code,
-    title: lesson.title,
-    description: lesson.description,
-    category: lesson.category,
-    xpReward: lesson.xpReward,
-    isCompleted: lesson.isCompleted,
-    isLocked: lesson.isLocked,
-    orderIndex: lesson.orderIndex,
-  }));
-
-  res.json({ success: true, data: remoteLessons });
-}
-
-export async function getRemoteExercises(): Promise<void> {
-  const exercises = await prisma.exercise.findMany({
-    where: { isPublished: true },
-    include: {
-      lesson: true,
-    },
-    orderBy: { orderIndex: 'asc' },
-  });
-
-  const remoteExercises = exercises.map((ex) => ({
-    id: ex.id,
-    lessonId: ex.lessonId,
-    type: ex.type,
-    prompt: ex.prompt,
-    targetText: ex.targetText,
-    translation: ex.translation,
-    optionsJson: ex.optionsJson,
-    correctAnswer: ex.correctAnswer,
-    audioUrl: ex.audioUrl,
-    phoneticText: ex.phoneticText,
-    explanation: ex.explanation,
-    passageText: ex.passageText,
-    imageResName: ex.imageResName,
-  }));
-
-  res.json({ success: true, data: remoteExercises });
-}
-
-export async function getRemoteVocabularies(): Promise<void> {
-  const vocabularies = await prisma.vocabulary.findMany({
-    where: { isFavorite: false },
-    orderBy: { word: 'asc' },
-  });
-
-  const remoteVocabularies = vocabularies.map((vocab) => ({
-    id: vocab.id,
-    languageCode: vocab.languageCode,
-    word: vocab.word,
-    translation: vocab.translation,
-    exampleSentence: vocab.exampleSentence,
-    exampleTranslation: vocab.exampleTranslation,
-    phonetic: vocab.phonetic,
-    category: vocab.category,
-    isFavorite: vocab.isFavorite,
-    needsReview: vocab.needsReview,
-  }));
-
-  res.json({ success: true, data: remoteVocabularies });
-}
-
-export async function getRemoteGrammarRules(): Promise<void> {
-  const rules = await prisma.grammarRule.findMany({
-    where: { isPublished: true },
-    orderBy: { title: 'asc' },
-  });
-
-  const remoteGrammarRules = rules.map((rule) => ({
-    id: rule.id,
-    languageCode: rule.languageCode,
-    level: rule.level.code,
-    title: rule.title,
-    summary: rule.summary,
-    fullRuleText: rule.fullRuleText,
-    exampleSentence: rule.exampleSentence,
-    exampleTranslation: rule.exampleTranslation,
-  }));
-
-  res.json({ success: true, data: remoteGrammarRules });
-}
-
-export async function getRemoteFlashcards(): Promise<void> {
-  const flashcards = await prisma.flashcard.findMany({
-    where: { isMastered: false },
-    orderBy: { id: 'asc' },
-  });
-
-  const remoteFlashcards = flashcards.map((fc) => ({
-    id: fc.id,
-    languageCode: fc.languageCode,
-    frontWord: fc.frontWord,
-    backTranslation: fc.backTranslation,
-    exampleSentence: fc.exampleSentence,
-    phonetic: fc.phonetic,
-    intervalDays: fc.intervalDays,
-    isMastered: fc.isMastered,
-  }));
-
-  res.json({ success: true, data: remoteFlashcards });
-}
-
-export async function getRemoteAchievements(): Promise<void> {
-  const achievements = await prisma.achievement.findMany({
-    where: { isUnlocked: false },
-    orderBy: { progress: 'asc' },
-  });
-
-  const remoteAchievements = achievements.map((ach) => ({
-    id: ach.id,
-    title: ach.title,
-    description: ach.description,
-    iconName: ach.iconName,
-    isUnlocked: ach.isUnlocked,
-    progress: ach.progress,
-    maxProgress: ach.maxProgress,
-    rewardXp: ach.rewardXp,
+    icon_name: ach.iconName ?? '',
+    max_progress: ach.conditionValue,
+    reward_xp: ach.rewardXp,
   }));
 
   res.json({ success: true, data: remoteAchievements });
@@ -541,7 +402,7 @@ export async function getLanguageLevels(req: Request, res: Response): Promise<vo
     throw new NotFoundError('Language');
   }
 
-  const levelIds = (language as any).units.map((u: any) => u.levelId);
+  const levelIds = language.units.map((u) => u.levelId);
 
   const levels = await prisma.cefrLevel.findMany({
     where: { id: { in: levelIds } },

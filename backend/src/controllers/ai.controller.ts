@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { generateText, providerStatus } from '../ai/gateway';
 import { consumeAiQuota } from '../utils/rateLimit';
+import { parseTutorReply, parseWritingFeedback } from '../utils/aiParsing';
 import { AppError } from '../utils/errors';
 
 function clientIdentity(req: Request): string | null {
@@ -29,7 +30,7 @@ EXPLANATION: <brief grammar note or NONE>
 `.trim();
 
 export async function chat(req: Request, res: Response): Promise<void> {
-  if (!consumeAiQuota(clientIdentity(req), req.ip ?? '')) {
+  if (!(await consumeAiQuota(clientIdentity(req), req.ip ?? ''))) {
     throw new AppError('Daily AI request limit reached', 429);
   }
 
@@ -49,29 +50,7 @@ export async function chat(req: Request, res: Response): Promise<void> {
   });
   if (!raw) throw new AppError('AI returned an empty response', 502);
 
-  let replyText = ''; // Default empty string, not null
-  let correction: string | null = null;
-  let suggestion: string | null = null;
-  let grammarExplanation: string | null = null;
-
-  for (const line of raw.split('\n')) {
-    const trimmed = line.trim();
-    // Case-insensitive match for "reply:" prefix, allow extra whitespace
-    if (/^reply:/i.test(trimmed)) {
-      replyText = trimmed.replace(/^reply:\s*/i, '').trim();
-    } else if (/^correction:/i.test(trimmed)) {
-      const v = trimmed.replace(/^correction:\s*/i, '').trim();
-      if (v.toUpperCase() !== 'NONE' && v.length > 0) correction = v;
-    } else if (/^suggestion:/i.test(trimmed)) {
-      const v = trimmed.replace(/^suggestion:\s*/i, '').trim();
-      if (v.toUpperCase() !== 'NONE' && v.length > 0) suggestion = v;
-    } else if (/^explanation:/i.test(trimmed)) {
-      const v = trimmed.replace(/^explanation:\s*/i, '').trim();
-      if (v.toUpperCase() !== 'NONE' && v.length > 0) grammarExplanation = v;
-    }
-  }
-  // Ensure replyText is never empty - use raw as fallback
-  if (!replyText.trim()) replyText = raw.trim();
+  const { replyText, correction, suggestion, grammarExplanation } = parseTutorReply(raw);
 
   res.json({
     success: true,
@@ -90,7 +69,7 @@ SUGGESTIONS: <suggestion 1> | <suggestion 2>
 `.trim();
 
 export async function write(req: Request, res: Response): Promise<void> {
-  if (!consumeAiQuota(clientIdentity(req), req.ip ?? '')) {
+  if (!(await consumeAiQuota(clientIdentity(req), req.ip ?? ''))) {
     throw new AppError('Daily AI request limit reached', 429);
   }
 
@@ -108,37 +87,10 @@ export async function write(req: Request, res: Response): Promise<void> {
   });
   if (!raw) throw new AppError('AI returned an empty response', 502);
 
-  let score = 85;
-  let corrected = userText;
-  let feedback = 'Good overall composition!';
-  const suggestions: string[] = [];
-
-  for (const line of raw.split('\n')) {
-    const trimmed = line.trim();
-    if (/^score:/i.test(trimmed)) {
-      const parsed = trimmed.replace(/^score:\s*/i, '').match(/\d+/)?.[0];
-      if (parsed !== undefined) score = Math.min(100, Math.max(0, Number(parsed)));
-    } else if (/^corrected:/i.test(trimmed)) {
-      corrected = trimmed.replace(/^corrected:\s*/i, '').trim() || corrected;
-    } else if (/^feedback:/i.test(trimmed)) {
-      feedback = trimmed.replace(/^feedback:\s*/i, '').trim() || feedback;
-    } else if (/^suggestions:/i.test(trimmed)) {
-      const items = trimmed
-        .replace(/^suggestions:\s*/i, '')
-        .split('|')
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0);
-      suggestions.push(...items);
-    }
-  }
+  const { score, correctedText, feedback, suggestions } = parseWritingFeedback(raw, userText);
 
   res.json({
     success: true,
-    data: {
-      score,
-      correctedText: corrected,
-      feedback,
-      suggestions: suggestions.length > 0 ? suggestions : ['Keep practicing daily'],
-    },
+    data: { score, correctedText, feedback, suggestions },
   });
 }

@@ -38,13 +38,13 @@ interface ContentRepository {
     fun getFlashcards(langCode: String): Flow<List<Flashcard>>
 
     /** Get all lessons once (non-flow). */
-    fun getAllLessonsOnce(): List<Lesson>
+    suspend fun getAllLessonsOnce(): List<Lesson>
 
     /** Get all vocabularies once (non-flow). */
-    fun getAllVocabulariesOnce(): List<Vocabulary>
+    suspend fun getAllVocabulariesOnce(): List<Vocabulary>
 
     /** Get all achievements once (non-flow). */
-    fun getAllAchievementsOnce(): List<Achievement>
+    suspend fun getAllAchievementsOnce(): List<Achievement>
 
     /** Seed initial content for first launch. */
     suspend fun initializeSeedData()

@@ -1,36 +1,35 @@
 package com.example.data.repository
 
-import com.example.ai.AiTeacherReply
+import android.content.Context
 import com.example.data.db.LinguaVerseDao
 import com.example.data.model.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.Dispatchers
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.MediaType
 import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 class AuthRepository(
-    private val dao: LinguaVerseDao
+    private val dao: LinguaVerseDao,
+    private val context: Context
 ) {
 
     private companion object {
         private const val BACKEND_BASE_URL = "http://10.0.2.2:3000"
+        private const val PREFS_NAME = "auth_prefs"
         private const val TOKEN_KEY = "jwt_token"
         private const val USER_KEY = "user_profile"
     }
 
     private val moshi = com.squareup.moshi.Moshi.Builder().build()
+    private val prefs get() = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     // Result pattern for operations
-    sealed class Result<T>(val success: T?, val error: Throwable?) {
+    open class Result<out T>(val success: T?, val error: Throwable?) {
         companion object {
-            fun success<T>(value: T): Result<T> = Result(success = value, error = null)
+            fun <T> success(value: T): Result<T> = Result(success = value, error = null)
             fun error(e: Throwable): Result<Nothing> = Result(success = null, error = e)
         }
     }
@@ -45,47 +44,46 @@ class AuthRepository(
         val streakCount: Int = 0,
         val dailyGoalXp: Int = 50,
         val todayXp: Int = 0
-    )
+    ) {
+        companion object {
+            fun fromJson(obj: JSONObject): UserProfile = UserProfile(
+                id = obj.optString("id", "user_default"),
+                username = obj.optString("username", "Anonymous"),
+                email = obj.optString("email"),
+                xp = obj.optInt("xp", 0),
+                coins = obj.optInt("coins", 0),
+                streakCount = obj.optInt("streakCount", 0),
+                dailyGoalXp = obj.optInt("dailyGoalXp", 50),
+                todayXp = obj.optInt("todayXp", 0)
+            )
+        }
+    }
 
-    // Token storage using SharedPreferences
     private suspend fun saveToken(token: String) {
-        android.content.SharedPreferences.getDefaultSharedPreferences(
-            android.app.ApplicationProvider.getApplicationContext()
-        ).edit().putString(TOKEN_KEY, token).apply()
+        prefs.edit().putString(TOKEN_KEY, token).apply()
     }
 
     private suspend fun loadToken(): String {
-        return android.content.SharedPreferences.getDefaultSharedPreferences(
-            android.app.ApplicationProvider.getApplicationContext()
-        ).getString(TOKEN_KEY, "")
+        return prefs.getString(TOKEN_KEY, "") ?: ""
     }
 
     private suspend fun deleteToken() {
-        android.content.SharedPreferences.getDefaultSharedPreferences(
-            android.app.ApplicationProvider.getApplicationContext()
-        ).edit().remove(TOKEN_KEY).apply()
+        prefs.edit().remove(TOKEN_KEY).apply()
     }
 
-    // User profile storage
     private suspend fun saveUserProfile(profile: UserProfile) {
         val json = moshi.adapter(UserProfile::class.java).toJson(profile)
-        android.content.SharedPreferences.getDefaultSharedPreferences(
-            android.app.ApplicationProvider.getApplicationContext()
-        ).edit().putString(USER_KEY, json).apply()
+        prefs.edit().putString(USER_KEY, json).apply()
     }
 
     private suspend fun loadUserProfile(): UserProfile? {
-        val json = android.content.SharedPreferences.getDefaultSharedPreferences(
-            android.app.ApplicationProvider.getApplicationContext()
-        ).getString(USER_KEY, "")
+        val json = prefs.getString(USER_KEY, "") ?: ""
         if (json.isBlank()) return null
         return moshi.adapter(UserProfile::class.java).fromJson(json)
     }
 
     private suspend fun deleteUserProfile() {
-        android.content.SharedPreferences.getDefaultSharedPreferences(
-            android.app.ApplicationProvider.getApplicationContext()
-        ).edit().remove(USER_KEY).apply()
+        prefs.edit().remove(USER_KEY).apply()
     }
 
     // Login with username/password
@@ -99,7 +97,7 @@ class AuthRepository(
             val payload = """{"username":"$username","password":"$password"}"""
             val request = Request.Builder()
                 .url("$BACKEND_BASE_URL/auth/login")
-                .post(RequestBody.create(payload, MediaType.get("application/json")))
+                .post(payload.toRequestBody("application/json".toMediaType()))
                 .build()
 
             val response = client.newCall(request).execute()
@@ -107,10 +105,10 @@ class AuthRepository(
                 return Result.error(Exception("Login failed: ${response.code}"))
             }
 
-            val responseJson = org.json.JSONObject(response.body?.string() ?: "{}")
+            val responseJson = JSONObject(response.body?.string() ?: "{}")
             val success = responseJson.getBoolean("success")
             if (!success) {
-                return Result.error(Exception(responseJson.getString("error") ?: "Login failed"))
+                return Result.error(Exception(responseJson.getString("error")))
             }
 
             val data = responseJson.getJSONObject("data")
@@ -122,7 +120,7 @@ class AuthRepository(
             saveUserProfile(userProfile)
 
             // Fetch complete profile
-            val profile = fetchUserProfile()
+            val profile = fetchUserProfile() ?: userProfile
 
             Result.success(profile)
         } catch (e: Exception) {
@@ -146,7 +144,7 @@ class AuthRepository(
             val payload = """{"refreshToken":"$token"}"""
             val request = Request.Builder()
                 .url("$BACKEND_BASE_URL/auth/refresh")
-                .post(RequestBody.create(payload, MediaType.get("application/json")))
+                .post(payload.toRequestBody("application/json".toMediaType()))
                 .build()
 
             val response = client.newCall(request).execute()
@@ -155,7 +153,7 @@ class AuthRepository(
                 return Result.error(Exception("Token refresh failed"))
             }
 
-            val responseJson = org.json.JSONObject(response.body()?.string() ?: "{}")
+            val responseJson = JSONObject(response.body?.string() ?: "{}")
             val newToken = responseJson.getJSONObject("data").getString("accessToken")
             saveToken(newToken)
             Result.success(newToken)
@@ -197,9 +195,13 @@ class AuthRepository(
                 return null
             }
 
-            val responseJson = org.json.JSONObject(response.body()?.string() ?: "{}")
+            val responseJson = JSONObject(response.body?.string() ?: "{}")
             val data = responseJson.getJSONObject("data")
             val profile = moshi.adapter(UserProfile::class.java).fromJson(data.toString())
+            if (profile == null || profile.id.isBlank()) {
+                logout()
+                return null
+            }
             saveUserProfile(profile)
             return profile
         } catch (e: Exception) {
