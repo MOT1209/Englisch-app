@@ -290,7 +290,9 @@ fun LinguaVerseApp(
 
             composable(Routes.ADMIN) {
                 if (BuildConfig.DEBUG) {
+                    val adminStats by adminViewModel.stats.collectAsStateWithLifecycle()
                     AdminPanelScreen(
+                        stats = adminStats,
                         onAddLanguage = { code, name, nativeName, flag, desc ->
                             adminViewModel.addNewLanguage(code, name, nativeName, flag, desc)
                         },

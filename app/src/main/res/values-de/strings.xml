@@ -138,10 +138,13 @@
     <string name="category_e_g_travel_food">Kategorie (z. B. Reisen, Essen)</string>
     <string name="flag_emoji_e_g">Flaggen-Emoji (z. B. 🇳🇱)</string>
     <string name="system_overview">Systemübersicht</string>
-    <string name="active_learners_count">Aktive Lernende: 12.450</string>
-    <string name="supported_languages_text">Unterstützte Sprachen: Unbegrenzt (12 Standard aktiviert)</string>
-    <string name="total_exercises_completed_148_920">Abgeschlossene Übungen gesamt: 148.920</string>
-    <string name="ai_server_uptime_99_98">KI-Server-Verfügbarkeit: 99,98 %</string>
+    <string name="stat_languages">Sprachen: %1$d</string>
+    <string name="stat_lessons">Lektionen: %1$d</string>
+    <string name="stat_exercises">Übungen: %1$d</string>
+    <string name="stat_vocabulary">Vokabelwörter: %1$d</string>
+    <string name="stat_grammar_rules">Grammatikregeln: %1$d</string>
+    <string name="stat_flashcards">Karteikarten: %1$d</string>
+    <string name="stat_completed_lessons">Abgeschlossene Lektionen: %1$d</string>
 
     <!-- Misc existing -->
     <string name="add_word_to_vocabulary">Wort zu Vokabeln hinzufügen</string>

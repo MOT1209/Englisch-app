@@ -138,10 +138,13 @@
     <string name="category_e_g_travel_food">التصنيف (مثل: السفر، الطعام)</string>
     <string name="flag_emoji_e_g">إيموجي العلم (مثل 🇳🇱)</string>
     <string name="system_overview">نظرة عامة على النظام</string>
-    <string name="active_learners_count">المتعلمون النشطون: 12,450</string>
-    <string name="supported_languages_text">اللغات المدعومة: غير محدود (12 افتراضية مفعّلة)</string>
-    <string name="total_exercises_completed_148_920">إجمالي التمارين المكتملة: 148,920</string>
-    <string name="ai_server_uptime_99_98">استقرار خادم الذكاء الاصطناعي: 99.98%</string>
+    <string name="stat_languages">اللغات: %1$d</string>
+    <string name="stat_lessons">الدروس: %1$d</string>
+    <string name="stat_exercises">التمارين: %1$d</string>
+    <string name="stat_vocabulary">كلمات المفردات: %1$d</string>
+    <string name="stat_grammar_rules">قواعد اللغة: %1$d</string>
+    <string name="stat_flashcards">البطاقات التعليمية: %1$d</string>
+    <string name="stat_completed_lessons">الدروس المكتملة: %1$d</string>
 
     <!-- Misc existing -->
     <string name="add_word_to_vocabulary">إضافة كلمة إلى المفردات</string>

@@ -146,3 +146,14 @@ suspend fun completeLesson(lessonId: String, xpEarned: Int, authToken: String?) 
             }
         }
     }
+
+    suspend fun getAdminStats(): AdminStats = AdminStats(
+        languages = dao.countLanguages(),
+        lessons = dao.countAllLessons(),
+        exercises = dao.countExercises(),
+        vocabulary = dao.countVocabulary(),
+        grammarRules = dao.countGrammarRules(),
+        flashcards = dao.countFlashcards(),
+        completedLessons = dao.countCompletedLessons()
+    )
+}

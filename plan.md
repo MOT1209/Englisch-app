@@ -10,7 +10,7 @@
 | 2 | سد ثغرة `updateProfile` (إسناد جماعي) + معالجة `P2002` | `backend/src/controllers/user.controller.ts`, `validators/user.validator.ts`, `routes/user.routes.ts`, `middleware/errorHandler.ts` | ✅ |
 | 3 | حدّ معدّل على مسارات المصادقة | `backend/src/utils/authLimiter.ts`, `routes/auth.routes.ts`, `package.json` | ✅ |
 | 4 | هجرة Prisma أساسية + seed قابل للإعادة | `backend/prisma/migrations/*`, `backend/prisma/seed.ts` | ✅ (التحقق مؤجل — لا يوجد `DATABASE_URL`) |
-| 5 | استبدال أرقام التحليلات المختلقة بأعداد محلية حقيقية | `AdminPanelScreen.kt`, `AdminViewModel.kt`, `LinguaVerseDao.kt`, `LinguaVerseRepository.kt`, `LinguaVerseApp.kt`, ملفات `strings.xml` الثلاثة | ⏳ |
+| 5 | استبدال أرقام التحليلات المختلقة بأعداد محلية حقيقية | `AdminPanelScreen.kt`, `AdminViewModel.kt`, `LinguaVerseDao.kt`, `LinguaVerseRepository.kt`, `LinguaVerseApp.kt`, ملفات `strings.xml` الثلاثة | ✅ (مكتوب — التحقق مؤجل لتجميع التطبيق) |
 | 6 | إزالة `GEMINI_API_KEY` المهجورة من التطبيق | `.env.example` (جذر — التطبيق)، `.env` | ✅ |
 | 7 | فحص قاعدة البيانات في `/health` | `backend/src/index.ts` | ✅ |
 
@@ -30,7 +30,7 @@
 ## P2 — عمق المنتج
 
 - تمرين نطق فعلي بالميكروفون (Gemini audio/STT) بدل "اقرأ بصوت عالٍ".
-- خوارزمية SRS للبطاقات (الحقول موجودة في المخطط: `easeFactor/intervalDays/repetitions`). **جارٍ التنفيذ** — `SrsScheduler` (SM-2) + هجرة Room v3 + أزرار تقييم في `FlashcardsView`.
+- خوارزمية SRS للبطاقات (الحقول موجودة في المخطط: `easeFactor/intervalDays/repetitions`). **مكتمل كودياً** — `SrsScheduler` (SM-2) + هجرة Room v3 + أزرار تقييم في `FlashcardsView` + حماية حالة SRS عند المزامنة. التحقق بالبناء محجوب مؤقتاً بكود P1.
 - منطق فتح الإنجازات على الخادم (`conditionType/conditionValue`).
 - محتوى كافٍ للغات المدعومة (العربية A1 جاهز في الـ seed — توسيعه لغيره).
 

@@ -18,12 +18,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import com.example.R
+import com.example.data.model.AdminStats
 import com.example.data.model.CefrLevel
 import com.example.ui.theme.extendedColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminPanelScreen(
+    stats: AdminStats,
     onAddLanguage: (String, String, String, String, String) -> Unit,
     onAddLesson: (String, String, CefrLevel, Int, String, String) -> Unit,
     onAddVocabulary: (String, String, String, String) -> Unit,
@@ -61,7 +63,7 @@ fun AdminPanelScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             when (activeTab) {
-                0 -> AdminAnalyticsTab()
+                0 -> AdminAnalyticsTab(stats)
                 1 -> AdminAddLanguageTab(onAddLanguage)
                 2 -> AdminAddLessonTab(onAddLesson)
                 3 -> AdminAddVocabTab(onAddVocabulary)
@@ -71,7 +73,7 @@ fun AdminPanelScreen(
 }
 
 @Composable
-fun AdminAnalyticsTab() {
+fun AdminAnalyticsTab(stats: AdminStats) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(text = stringResource(R.string.system_overview), fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
 
@@ -81,12 +83,26 @@ fun AdminAnalyticsTab() {
             shape = RoundedCornerShape(18.dp)
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
-                Text(text = stringResource(R.string.active_learners_count), fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text(text = stringResource(R.string.supported_languages_text), fontSize = 13.sp)
-                Text(text = stringResource(R.string.total_exercises_completed_148_920), fontSize = 13.sp)
-                Text(text = stringResource(R.string.ai_server_uptime_99_98), fontSize = 13.sp)
+                StatRow(stringResource(R.string.stat_languages), stats.languages)
+                StatRow(stringResource(R.string.stat_lessons), stats.lessons)
+                StatRow(stringResource(R.string.stat_exercises), stats.exercises)
+                StatRow(stringResource(R.string.stat_vocabulary), stats.vocabulary)
+                StatRow(stringResource(R.string.stat_grammar_rules), stats.grammarRules)
+                StatRow(stringResource(R.string.stat_flashcards), stats.flashcards)
+                StatRow(stringResource(R.string.stat_completed_lessons), stats.completedLessons)
             }
         }
+    }
+}
+
+@Composable
+private fun StatRow(label: String, count: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = label, fontSize = 14.sp, modifier = Modifier.weight(1f))
+        Text(text = count.toString(), fontWeight = FontWeight.Bold, fontSize = 14.sp)
     }
 }
 

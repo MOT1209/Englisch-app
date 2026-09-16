@@ -2,6 +2,7 @@ package com.example.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.model.AdminStats
 import com.example.data.model.CefrLevel
 import com.example.data.model.Exercise
 import com.example.data.model.ExerciseType
@@ -9,6 +10,8 @@ import com.example.data.model.Language
 import com.example.data.model.Lesson
 import com.example.data.model.Vocabulary
 import com.example.data.repository.LinguaVerseRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -19,6 +22,19 @@ import kotlinx.coroutines.launch
 class AdminViewModel(
     private val repository: LinguaVerseRepository
 ) : ViewModel() {
+
+    private val _stats = MutableStateFlow(AdminStats())
+    val stats: StateFlow<AdminStats> = _stats
+
+    init {
+        refreshStats()
+    }
+
+    fun refreshStats() {
+        viewModelScope.launch {
+            _stats.value = repository.getAdminStats()
+        }
+    }
 
     fun addNewLanguage(
         code: String,

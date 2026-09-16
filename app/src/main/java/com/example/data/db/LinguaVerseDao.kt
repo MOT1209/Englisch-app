@@ -110,6 +110,25 @@ interface LinguaVerseDao {
     @Update
     suspend fun updateFlashcard(flashcard: Flashcard)
 
+    // Admin analytics
+    @Query("SELECT COUNT(*) FROM lessons")
+    suspend fun countAllLessons(): Int
+
+    @Query("SELECT COUNT(*) FROM exercises")
+    suspend fun countExercises(): Int
+
+    @Query("SELECT COUNT(*) FROM vocabularies")
+    suspend fun countVocabulary(): Int
+
+    @Query("SELECT COUNT(*) FROM grammar_rules")
+    suspend fun countGrammarRules(): Int
+
+    @Query("SELECT COUNT(*) FROM flashcards")
+    suspend fun countFlashcards(): Int
+
+    @Query("SELECT COUNT(*) FROM lessons WHERE isCompleted = 1")
+    suspend fun countCompletedLessons(): Int
+
     // Achievements
     @Query("SELECT * FROM achievements")
     fun getAllAchievements(): Flow<List<Achievement>>

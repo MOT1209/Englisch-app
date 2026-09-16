@@ -138,10 +138,13 @@
     <string name="category_e_g_travel_food">Category (e.g., Travel, Food)</string>
     <string name="flag_emoji_e_g">Flag Emoji (for example 🇳🇱)</string>
     <string name="system_overview">System Overview</string>
-    <string name="active_learners_count">Active Learners: 12,450</string>
-    <string name="supported_languages_text">Supported Languages: Unlimited (12 Defaults Enabled)</string>
-    <string name="total_exercises_completed_148_920">Total Exercises Completed: 148,920</string>
-    <string name="ai_server_uptime_99_98">AI Server Uptime: 99.98%</string>
+    <string name="stat_languages">Languages: %1$d</string>
+    <string name="stat_lessons">Lessons: %1$d</string>
+    <string name="stat_exercises">Exercises: %1$d</string>
+    <string name="stat_vocabulary">Vocabulary Words: %1$d</string>
+    <string name="stat_grammar_rules">Grammar Rules: %1$d</string>
+    <string name="stat_flashcards">Flashcards: %1$d</string>
+    <string name="stat_completed_lessons">Completed Lessons: %1$d</string>
 
     <!-- Misc existing -->
     <string name="add_word_to_vocabulary">Add Word to Vocabulary</string>
